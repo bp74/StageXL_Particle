@@ -6,4 +6,6 @@ homepage: http://www.stagexl.org
 dependencies:
   browser: any
   stagexl:
-    path: D:\GitHub\bp74\StageXL
+    git:
+      ref: master
+      url: https://github.com/bp74/StageXL.git
