@@ -149,16 +149,10 @@ class _Particle {
     if (index > 31) index = 31;
 
     var renderTextureQuad = _particleEmitter._renderTextureQuads[index];
-    var matrix = renderState.globalMatrix;
 
-    num a = matrix.a;
-    num b = matrix.b;
-    num c = matrix.c;
-    num d = matrix.d;
-    num tx = targetX * a + targetY * c + matrix.tx;
-    num ty = targetX * b + targetY * d + matrix.ty;
+    _tmpMatrix.setTo(_size / 32, 0, 0, _size / 32, _x - _size / 2.0, _y - _size / 2.0);
+    _tmpMatrix.concat(renderState.globalMatrix);
 
-    _tmpMatrix.setTo(a, b, c, d, tx, ty);
     renderState.renderContext.renderQuad(renderTextureQuad, _tmpMatrix, 1.0);
   }
 }
