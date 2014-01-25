@@ -7,7 +7,8 @@ class ParticleEmitter extends DisplayObject implements Animatable {
   _Particle _rootParticle;
   _Particle _lastParticle;
 
-  CanvasElement _particleCanvas;
+  RenderTexture _renderTexture = new RenderTexture(1024, 32, true, Color.Transparent, 1.0);
+  List<RenderTextureQuad> _renderTextureQuads = new List<RenderTextureQuad>();
   int _particleCount = 0;
   num _frameTime = 0.0;
   num _emissionTime = 0.0;
@@ -68,20 +69,26 @@ class ParticleEmitter extends DisplayObject implements Animatable {
     _frameTime = 0.0;
     _particleCount = 0;
 
+    for(int i = 0; i < 32; i++) {
+      _renderTextureQuads.add(_renderTexture.quad.cut(new Rectangle(i * 32, 0, 32, 32)));
+    }
+
     updateConfig(config);
   }
 
   //-------------------------------------------------------------------------------------------------
   //-------------------------------------------------------------------------------------------------
 
-  void _drawParticleCanvas() {
+  void _drawParticleTexture() {
 
-    _particleCanvas = new CanvasElement(width: 1024, height: 32);
-    var context = _particleCanvas.context2D;
+    CanvasRenderingContext2D context = _renderTexture.canvas.context2D;
+    context.setTransform(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+    context.globalAlpha = 1.0;
+    context.globalCompositeOperation = CompositeOperation.SOURCE_OVER;
 
     for(int i = 0; i < 32; i++) {
 
-      var radius = 15;
+      int radius = 15;
       num targetX = i * 32 + 15.5;
       num targetY = 15.5;
 
@@ -103,6 +110,8 @@ class ParticleEmitter extends DisplayObject implements Animatable {
       context.fillStyle = gradient;
       context.fill();
     }
+
+    _renderTexture.update();
   }
 
   //-------------------------------------------------------------------------------------------------
@@ -123,6 +132,8 @@ class ParticleEmitter extends DisplayObject implements Animatable {
     _locationX = _ensureNum(x);
     _locationY = _ensureNum(y);
   }
+
+  RenderTexture get renderTexture => _renderTexture;
 
   int get particleCount => _particleCount;
 
@@ -172,7 +183,7 @@ class ParticleEmitter extends DisplayObject implements Animatable {
     if (_duration <= 0) _duration = double.INFINITY;
     _emissionTime = _duration;
 
-    _drawParticleCanvas();
+    _drawParticleTexture();
   }
 
   //-------------------------------------------------------------------------------------------------
@@ -242,14 +253,11 @@ class ParticleEmitter extends DisplayObject implements Animatable {
 
   void render(RenderState renderState) {
 
-    var context = renderState.context;
-    context.globalCompositeOperation = _compositeOperation;
-
     var particle = _rootParticle;
 
     for(int i = 0; i < _particleCount; i++) {
       particle = particle._nextParticle;
-      particle._renderParticle(context);
+      particle._renderParticle(renderState);
     }
   }
 

@@ -23,7 +23,6 @@ class _Particle {
   num _emitRotation = 0.0;
   num _emitRotationDelta = 0.0;
 
-  CanvasElement _particleCanvas;
   _Particle _nextParticle;
 
   _Particle(ParticleEmitter particleEmitter) : _particleEmitter = particleEmitter;
@@ -62,8 +61,6 @@ class _Particle {
     if (size2 < 0.1) size2 = 0.1;
     _size = size1;
     _sizeDelta = (size2 - size1) / _totalTime;
-
-    _particleCanvas = pe._particleCanvas;
 
     /*
     ParticleColor color = particle.color;
@@ -137,14 +134,31 @@ class _Particle {
 
   //-----------------------------------------------------------------------------------------------
 
-  _renderParticle(CanvasRenderingContext2D context) {
+  static Matrix _tmpMatrix = new Matrix.fromIdentity();
 
-    var imageIndex = _currentTime * 32 ~/ _totalTime;
-    var sourceX = 32 * imageIndex;
-    var sourceY = 0;
+  _renderParticle(RenderState renderState) {
+
+    // TODO: We can optimize this with a custom WebGL render program.
+    // This render program will also support tinted textures!!!
+
     var targetX = _x - _size / 2.0;
     var targetY = _y - _size / 2.0;
 
-    context.drawImageScaledFromSource(_particleCanvas, sourceX, sourceY, 32, 32, targetX, targetY, _size, _size);
+    var index = _currentTime * 32 ~/ _totalTime;
+    if (index < 0) index = 0;
+    if (index > 31) index = 31;
+
+    var renderTextureQuad = _particleEmitter._renderTextureQuads[index];
+    var matrix = renderState.globalMatrix;
+
+    num a = matrix.a;
+    num b = matrix.b;
+    num c = matrix.c;
+    num d = matrix.d;
+    num tx = targetX * a + targetY * c + matrix.tx;
+    num ty = targetX * b + targetY * d + matrix.ty;
+
+    _tmpMatrix.setTo(a, b, c, d, tx, ty);
+    renderState.renderContext.renderQuad(renderTextureQuad, _tmpMatrix, 1.0);
   }
 }
