@@ -153,6 +153,6 @@ class _Particle {
     _tmpMatrix.setTo(_size / 32, 0, 0, _size / 32, _x - _size / 2.0, _y - _size / 2.0);
     _tmpMatrix.concat(renderState.globalMatrix);
 
-    renderState.renderContext.renderQuad(renderTextureQuad, _tmpMatrix, 1.0);
+    renderState.renderContext.renderQuad(renderTextureQuad, _tmpMatrix);
   }
 }
