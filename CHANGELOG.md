@@ -3,6 +3,9 @@
 This file contains highlights of what changes on each version of the StageXL_Particle
 package. This file is normally updated whenever we push a new version to pub.
 
+#### Pub version 0.3.1
+  * Added dedicated Canvas2D and WebGL renderer
+  
 #### Pub version 0.3.0
   * Support for WebGL renderer in StageXL
 
