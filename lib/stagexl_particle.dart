@@ -15,7 +15,7 @@ import 'package:stagexl/stagexl.dart';
 // http://wiki.starling-framework.org/extensions/particlesystem
 //-------------------------------------------------------------------------------------------------
 
-part 'src/particle_temp.dart';
+part 'src/particle.dart';
 part 'src/particle_color.dart';
 part 'src/particle_emitter.dart';
 part 'src/particle_render_program.dart';
