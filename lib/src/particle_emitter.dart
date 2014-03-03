@@ -93,18 +93,20 @@ class ParticleEmitter extends DisplayObject implements Animatable {
       num targetX = i * 32 + 15.5;
       num targetY = 15.5;
 
-      num colorRed   = _startColor._red   + i * (_endColor._red   - _startColor._red ) / 31;
-      num colorGreen = _startColor._green + i * (_endColor._green - _startColor._green) / 31;
-      num colorBlue  = _startColor._blue  + i * (_endColor._blue  - _startColor._blue ) / 31;
-      num colorAlpha = _startColor._alpha + i * (_endColor._alpha - _startColor._alpha) / 31;
+      num colorR = _startColor.red   + i * (_endColor.red   - _startColor.red  ) / 31;
+      num colorG = _startColor.green + i * (_endColor.green - _startColor.green) / 31;
+      num colorB = _startColor.blue  + i * (_endColor.blue  - _startColor.blue ) / 31;
+      num colorA = _startColor.alpha + i * (_endColor.alpha - _startColor.alpha) / 31;
 
-      int cRed = (255.0 * colorRed).toInt();
-      int cGreen = (255.0 * colorGreen).toInt();
-      int cBlue = (255.0 * colorBlue).toInt();
+      if (i == 0) colorR = colorG = colorB = colorA = 1.0;
+
+      int colorIntR = (255.0 * colorR).toInt();
+      int colorIntG = (255.0 * colorG).toInt();
+      int colorIntB = (255.0 * colorB).toInt();
 
       var gradient = context.createRadialGradient(targetX, targetY, 0, targetX, targetY, radius);
-      gradient.addColorStop(0.00, "rgba($cRed, $cGreen, $cBlue, $colorAlpha)");
-      gradient.addColorStop(1.00, "rgba($cRed, $cGreen, $cBlue, 0.0)");
+      gradient.addColorStop(0.00, "rgba($colorIntR, $colorIntG, $colorIntB, $colorA)");
+      gradient.addColorStop(1.00, "rgba($colorIntR, $colorIntG, $colorIntB, 0.0)");
       context.beginPath();
       context.moveTo(targetX + radius, targetY);
       context.arc(targetX, targetY, radius, 0, PI * 2.0, false);
@@ -254,11 +256,34 @@ class ParticleEmitter extends DisplayObject implements Animatable {
 
   void render(RenderState renderState) {
 
+    var renderContext = renderState.renderContext;
+    var alpha = renderState.globalAlpha;
+    var matrix = renderState.globalMatrix;
     var particle = _rootParticle;
 
-    for(int i = 0; i < _particleCount; i++) {
-      particle = particle._nextParticle;
-      particle._renderParticle(renderState);
+    // renderState.renderQuad(_renderTextureQuads[0].renderTexture.quad);
+
+    if (renderContext is RenderContextCanvas) {
+
+      var context = renderContext.rawContext;
+      context.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
+      context.globalAlpha = alpha;
+      context.globalCompositeOperation = this.compositeOperation;
+
+      for(int i = 0; i < _particleCount; i++) {
+        particle = particle._nextParticle;
+        particle._renderParticleCanvas(context);
+      }
+
+    } else if (renderContext is RenderContextWebGL) {
+
+      var renderProgram = _ParticleRenderProgram.instance;
+      renderProgram.configure(renderContext, _renderTextureQuads[0], matrix);
+
+      for(int i = 0; i < _particleCount; i++) {
+        particle = particle._nextParticle;
+        particle._renderParticleWegGL(renderProgram);
+      }
     }
   }
 

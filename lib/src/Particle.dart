@@ -22,6 +22,14 @@ class _Particle {
   num _emitRadiusDelta = 0.0;
   num _emitRotation = 0.0;
   num _emitRotationDelta = 0.0;
+  num _colorR = 0.0;
+  num _colorG = 0.0;
+  num _colorB = 0.0;
+  num _colorA = 0.0;
+  num _colorDeltaR = 0.0;
+  num _colorDeltaG = 0.0;
+  num _colorDeltaB = 0.0;
+  num _colorDeltaA = 0.0;
 
   _Particle _nextParticle;
 
@@ -62,20 +70,14 @@ class _Particle {
     _size = size1;
     _sizeDelta = (size2 - size1) / _totalTime;
 
-    /*
-    ParticleColor color = particle.color;
-    ParticleColor colorDelta = particle.colorDelta;
-
-    color.red   = startColor.red;
-    color.green = startColor.green;
-    color.blue  = startColor.blue;
-    color.alpha = startColor.alpha;
-
-    colorDelta.red   = (endColor.red   - startColor.red)   / particle.totalTime;
-    colorDelta.green = (endColor.green - startColor.green) / particle.totalTime;
-    colorDelta.blue  = (endColor.blue  - startColor.blue)  / particle.totalTime;
-    colorDelta.alpha = (endColor.alpha - startColor.alpha) / particle.totalTime;
-    */
+    _colorR = pe._startColor.red;
+    _colorG = pe._startColor.green;
+    _colorB = pe._startColor.blue;
+    _colorA = pe._startColor.alpha;
+    _colorDeltaR = (pe._endColor.red   - _colorR)   / _totalTime;
+    _colorDeltaG = (pe._endColor.green - _colorG) / _totalTime;
+    _colorDeltaB = (pe._endColor.blue  - _colorB)  / _totalTime;
+    _colorDeltaA = (pe._endColor.alpha - _colorA) / _totalTime;
   }
 
   //-----------------------------------------------------------------------------------------------
@@ -120,39 +122,40 @@ class _Particle {
 
     _size += _sizeDelta * passedTime;
 
-    /*
-    ParticleColor color = particle.color;
-    ParticleColor colorDelta = particle.colorDelta;
-    color.red   += colorDelta.red   * passedTime;
-    color.green += colorDelta.green * passedTime;
-    color.blue  += colorDelta.blue  * passedTime;
-    color.alpha += colorDelta.alpha * passedTime;
-    */
+    _colorR += _colorDeltaR * passedTime;
+    _colorG += _colorDeltaG * passedTime;
+    _colorB += _colorDeltaB * passedTime;
+    _colorA += _colorDeltaA * passedTime;
 
     return true;
   }
 
   //-----------------------------------------------------------------------------------------------
 
-  static Matrix _tmpMatrix = new Matrix.fromIdentity();
+  _renderParticleCanvas(CanvasRenderingContext2D context) {
 
-  _renderParticle(RenderState renderState) {
-
-    // TODO: We can optimize this with a custom WebGL render program.
-    // This render program will also support tinted textures!!!
-
-    var targetX = _x - _size / 2.0;
-    var targetY = _y - _size / 2.0;
-
-    var index = _currentTime * 32 ~/ _totalTime;
-    if (index < 0) index = 0;
+    var index = 1 + _currentTime * 31 ~/ _totalTime;
+    if (index < 1) index = 1;
     if (index > 31) index = 31;
 
     var renderTextureQuad = _particleEmitter._renderTextureQuads[index];
+    var xyList = renderTextureQuad.xyList;
+    var source = renderTextureQuad.renderTexture.canvas;
+    var sourceX = xyList[0];
+    var sourceY = xyList[1];
+    var sourceWidth = xyList[4] - sourceX;
+    var sourceHeight = xyList[5] - sourceY;
+    var destinationX = _x - _size / 2.0;
+    var destinationY = _y - _size / 2.0;
+    var destinationWidth= _size;
+    var destinationHeight = _size;
 
-    _tmpMatrix.setTo(_size / 32, 0, 0, _size / 32, _x - _size / 2.0, _y - _size / 2.0);
-    _tmpMatrix.concat(renderState.globalMatrix);
+    context.drawImageScaledFromSource(source,
+      sourceX, sourceY, sourceWidth, sourceHeight,
+      destinationX, destinationY, destinationWidth, destinationHeight);
+  }
 
-    renderState.renderContext.renderQuad(renderTextureQuad, _tmpMatrix);
+  _renderParticleWegGL(_ParticleRenderProgram renderProgram) {
+    renderProgram.renderParticle(_x, _y, _size, _colorR, _colorG, _colorB, _colorA);
   }
 }

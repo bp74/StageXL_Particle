@@ -1,7 +1,11 @@
 library stagexl_particle;
 
+import 'dart:async';
 import 'dart:math' hide Point, Rectangle;
 import 'dart:html' show CanvasElement, CanvasRenderingContext2D;
+import 'dart:web_gl' as gl;
+import 'dart:typed_data';
+
 import 'package:stagexl/stagexl.dart';
 
 //-------------------------------------------------------------------------------------------------
@@ -11,7 +15,33 @@ import 'package:stagexl/stagexl.dart';
 // http://wiki.starling-framework.org/extensions/particlesystem
 //-------------------------------------------------------------------------------------------------
 
-part 'src/Particle.dart';
-part 'src/ParticleColor.dart';
-part 'src/ParticleEmitter.dart';
-part 'src/Tools.dart';
+part 'src/particle.dart';
+part 'src/particle_color.dart';
+part 'src/particle_emitter.dart';
+part 'src/particle_render_program.dart';
+
+
+
+bool _ensureBool(bool value) {
+  if (value is bool) {
+    return value;
+  } else {
+    throw new ArgumentError("The supplied value ($value) is not a bool.");
+  }
+}
+
+int _ensureInt(int value) {
+  if (value is int) {
+    return value;
+  } else {
+    throw new ArgumentError("The supplied value ($value) is not an int.");
+  }
+}
+
+num _ensureNum(num value) {
+  if (value is num) {
+    return value;
+  } else {
+    throw new ArgumentError("The supplied value ($value) is not a number.");
+  }
+}
