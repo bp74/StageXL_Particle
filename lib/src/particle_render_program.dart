@@ -118,7 +118,7 @@ class _ParticleRenderProgram extends RenderProgram {
 
     renderContext.activateRenderProgram(this);
 
-    Float32List uvList = renderTextureQuad.uvList;
+    List<num> uvList = renderTextureQuad.uvList;
 
     for(int index = 0; index <= _vertexList.length - 32; index += 32) {
       _vertexList[index + 02] = uvList[0];
