@@ -42,12 +42,12 @@ class _ParticleRenderProgram extends RenderProgram {
 
   static const int _maxQuadCount = 1024;
 
+  int _contextIdentifier = -1;
   gl.RenderingContext _renderingContext;
   gl.Program _program;
   gl.Buffer _vertexBuffer;
   gl.Buffer _indexBuffer;
 
-  StreamSubscription _contextRestoredSubscription;
   Int16List _indexList = new Int16List(_maxQuadCount * 6);
   Float32List _vertexList = new Float32List(_maxQuadCount * 4 * 8);
 
@@ -104,13 +104,10 @@ class _ParticleRenderProgram extends RenderProgram {
 
   void activate(RenderContextWebGL renderContext) {
 
-    if (_program == null) {
+    if (_contextIdentifier != renderContext.contextIdentifier) {
 
-      if (_renderingContext == null) {
-        _renderingContext = renderContext.rawContext;
-        _contextRestoredSubscription = renderContext.onContextRestored.listen(_onContextRestored);
-      }
-
+      _contextIdentifier = renderContext.contextIdentifier;
+      _renderingContext = renderContext.rawContext;
       _program = createProgram(_renderingContext, _vertexShaderSource, _fragmentShaderSource);
 
       _aVertexPositionLocation = _renderingContext.getAttribLocation(_program, "aVertexPosition");
@@ -209,9 +206,4 @@ class _ParticleRenderProgram extends RenderProgram {
     _quadCount = 0;
   }
 
-  //-----------------------------------------------------------------------------------------------
-
-  _onContextRestored(RenderContextEvent e) {
-    _program = null;
-  }
 }
