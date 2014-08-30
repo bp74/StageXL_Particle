@@ -257,8 +257,8 @@ class ParticleEmitter extends DisplayObject implements Animatable {
   void render(RenderState renderState) {
 
     var renderContext = renderState.renderContext;
-    var alpha = renderState.globalAlpha;
-    var matrix = renderState.globalMatrix;
+    var globalAlpha = renderState.globalAlpha;
+    var globalMatrix = renderState.globalMatrix;
     var particle = _rootParticle;
 
     // renderState.renderQuad(_renderTextureQuads[0].renderTexture.quad);
@@ -266,9 +266,8 @@ class ParticleEmitter extends DisplayObject implements Animatable {
     if (renderContext is RenderContextCanvas) {
 
       var context = renderContext.rawContext;
-      context.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
-      context.globalAlpha = alpha;
-      context.globalCompositeOperation = this.compositeOperation;
+      renderContext.setTransform(globalMatrix);
+      renderContext.setAlpha(globalAlpha);
 
       for(int i = 0; i < _particleCount; i++) {
         particle = particle._nextParticle;
@@ -278,7 +277,12 @@ class ParticleEmitter extends DisplayObject implements Animatable {
     } else if (renderContext is RenderContextWebGL) {
 
       var renderProgram = _ParticleRenderProgram.instance;
-      renderProgram.configure(renderContext, _renderTextureQuads[0], matrix);
+      var renderTextureQuad = _renderTextureQuads[0];
+
+      renderContext.activateRenderProgram(renderProgram);
+      renderContext.activateRenderTexture(renderTextureQuad.renderTexture);
+      renderProgram.renderTextureQuad = renderTextureQuad;
+      renderProgram.globalMatrix = globalMatrix;
 
       for(int i = 0; i < _particleCount; i++) {
         particle = particle._nextParticle;

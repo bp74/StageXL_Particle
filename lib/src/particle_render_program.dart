@@ -9,14 +9,15 @@ class _ParticleRenderProgram extends RenderProgram {
       attribute vec2 aVertexPosition;
       attribute vec2 aVertexTextCoord;
       attribute vec4 aVertexColor;
-      uniform mat3 uGlobalMatrix;
+      uniform mat4 uProjectionMatrix;
+      uniform mat4 uGlobalMatrix;
       varying vec2 vTextCoord;
       varying vec4 vColor; 
 
       void main() {
         vTextCoord = aVertexTextCoord;
         vColor = aVertexColor;
-        gl_Position = vec4(aVertexPosition, 1.0, 1.0) * mat4(uGlobalMatrix); 
+        gl_Position = vec4(aVertexPosition, 1.0, 1.0) * uGlobalMatrix * uProjectionMatrix;
       }
       """;
 
@@ -50,6 +51,7 @@ class _ParticleRenderProgram extends RenderProgram {
   Int16List _indexList = new Int16List(_maxQuadCount * 6);
   Float32List _vertexList = new Float32List(_maxQuadCount * 4 * 8);
 
+  gl.UniformLocation _uProjectionMatrixLocation;
   gl.UniformLocation _uGlobalMatrixLocation;
   gl.UniformLocation _uSamplerLocation;
 
@@ -57,6 +59,8 @@ class _ParticleRenderProgram extends RenderProgram {
   int _aVertexTextCoordLocation = 0;
   int _aVertexColorLocation = 0;
   int _quadCount = 0;
+
+  Matrix3D _globalMatrix = new Matrix3D.fromIdentity();
 
   _ParticleRenderProgram() {
     for(int i = 0, j = 0; i <= _indexList.length - 6; i += 6, j +=4 ) {
@@ -66,6 +70,33 @@ class _ParticleRenderProgram extends RenderProgram {
       _indexList[i + 3] = j + 0;
       _indexList[i + 4] = j + 2;
       _indexList[i + 5] = j + 3;
+    }
+  }
+
+  //-----------------------------------------------------------------------------------------------
+
+  void set projectionMatrix(Matrix3D matrix) {
+    _renderingContext.uniformMatrix4fv(_uProjectionMatrixLocation, false, matrix.data);
+  }
+
+  void set globalMatrix(Matrix globalMatrix) {
+    _globalMatrix.copyFromMatrix2D(globalMatrix);
+    _renderingContext.uniformMatrix4fv(_uGlobalMatrixLocation, false, _globalMatrix.data);
+  }
+
+  void set renderTextureQuad(RenderTextureQuad renderTextureQuad) {
+
+    List<num> uvList = renderTextureQuad.uvList;
+
+    for(int index = 0; index <= _vertexList.length - 32; index += 32) {
+      _vertexList[index + 02] = uvList[0];
+      _vertexList[index + 03] = uvList[1];
+      _vertexList[index + 10] = uvList[2];
+      _vertexList[index + 11] = uvList[3];
+      _vertexList[index + 18] = uvList[4];
+      _vertexList[index + 19] = uvList[5];
+      _vertexList[index + 26] = uvList[6];
+      _vertexList[index + 27] = uvList[7];
     }
   }
 
@@ -86,8 +117,9 @@ class _ParticleRenderProgram extends RenderProgram {
       _aVertexTextCoordLocation = _renderingContext.getAttribLocation(_program, "aVertexTextCoord");
       _aVertexColorLocation = _renderingContext.getAttribLocation(_program, "aVertexColor");
 
-      _uSamplerLocation = _renderingContext.getUniformLocation(_program, "uSampler");
+      _uProjectionMatrixLocation = _renderingContext.getUniformLocation(_program, "uProjectionMatrix");
       _uGlobalMatrixLocation = _renderingContext.getUniformLocation(_program, "uGlobalMatrix");
+      _uSamplerLocation = _renderingContext.getUniformLocation(_program, "uSampler");
 
       _renderingContext.enableVertexAttribArray(_aVertexPositionLocation);
       _renderingContext.enableVertexAttribArray(_aVertexTextCoordLocation);
@@ -108,37 +140,7 @@ class _ParticleRenderProgram extends RenderProgram {
     _renderingContext.vertexAttribPointer(_aVertexPositionLocation, 2, gl.FLOAT, false, 32, 0);
     _renderingContext.vertexAttribPointer(_aVertexTextCoordLocation, 2, gl.FLOAT, false, 32, 8);
     _renderingContext.vertexAttribPointer(_aVertexColorLocation, 4, gl.FLOAT, false, 32, 16);
-  }
-
-  //-----------------------------------------------------------------------------------------------
-
-  void configure(RenderContextWebGL renderContext,
-                 RenderTextureQuad renderTextureQuad,
-                 Matrix globalMatrix) {
-
-    renderContext.activateRenderProgram(this);
-
-    List<num> uvList = renderTextureQuad.uvList;
-
-    for(int index = 0; index <= _vertexList.length - 32; index += 32) {
-      _vertexList[index + 02] = uvList[0];
-      _vertexList[index + 03] = uvList[1];
-      _vertexList[index + 10] = uvList[2];
-      _vertexList[index + 11] = uvList[3];
-      _vertexList[index + 18] = uvList[4];
-      _vertexList[index + 19] = uvList[5];
-      _vertexList[index + 26] = uvList[6];
-      _vertexList[index + 27] = uvList[7];
-    }
-
-    Float32List uGlobalMatrix = new Float32List.fromList([
-        globalMatrix.a, globalMatrix.c, globalMatrix.tx,
-        globalMatrix.b, globalMatrix.d, globalMatrix.ty,
-        0.0, 0.0, 1.0]);
-
-    renderTextureQuad.renderTexture.activate(renderContext, gl.TEXTURE1);
-    _renderingContext.uniformMatrix3fv(_uGlobalMatrixLocation, false, uGlobalMatrix);
-    _renderingContext.uniform1i(_uSamplerLocation, 1);
+    _renderingContext.uniform1i(_uSamplerLocation, 0);
   }
 
   //-----------------------------------------------------------------------------------------------
@@ -209,7 +211,7 @@ class _ParticleRenderProgram extends RenderProgram {
 
   //-----------------------------------------------------------------------------------------------
 
-  _onContextRestored(Event e) {
+  _onContextRestored(RenderContextEvent e) {
     _program = null;
   }
 }
