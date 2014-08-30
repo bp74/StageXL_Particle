@@ -84,7 +84,6 @@ class ParticleEmitter extends DisplayObject implements Animatable {
     CanvasRenderingContext2D context = _renderTexture.canvas.context2D;
     context.setTransform(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
     context.globalAlpha = 1.0;
-    context.globalCompositeOperation = CompositeOperation.SOURCE_OVER;
     context.clearRect(0, 0, 1024, 32);
 
     for(int i = 0; i < 32; i++) {
