@@ -4,35 +4,35 @@ class _ParticleRenderProgram extends RenderProgram {
 
   static final _ParticleRenderProgram instance = new _ParticleRenderProgram();
 
-  var _vertexShaderSource = """
-      precision mediump float;
-      attribute vec2 aVertexPosition;
-      attribute vec2 aVertexTextCoord;
-      attribute vec4 aVertexColor;
-      uniform mat4 uProjectionMatrix;
-      uniform mat4 uGlobalMatrix;
-      varying vec2 vTextCoord;
-      varying vec4 vColor; 
+  String get vertexShaderSource => """
+    precision mediump float;
+    attribute vec2 aVertexPosition;
+    attribute vec2 aVertexTextCoord;
+    attribute vec4 aVertexColor;
+    uniform mat4 uProjectionMatrix;
+    uniform mat4 uGlobalMatrix;
+    varying vec2 vTextCoord;
+    varying vec4 vColor; 
 
-      void main() {
-        vTextCoord = aVertexTextCoord;
-        vColor = aVertexColor;
-        gl_Position = vec4(aVertexPosition, 1.0, 1.0) * uGlobalMatrix * uProjectionMatrix;
-      }
-      """;
+    void main() {
+      vTextCoord = aVertexTextCoord;
+      vColor = aVertexColor;
+      gl_Position = vec4(aVertexPosition, 1.0, 1.0) * uGlobalMatrix * uProjectionMatrix;
+    }
+    """;
 
-  var _fragmentShaderSource = """
-      precision mediump float;
-      uniform sampler2D uSampler;
-      varying vec2 vTextCoord;
-      varying vec4 vColor;
+  String get fragmentShaderSource => """
+    precision mediump float;
+    uniform sampler2D uSampler;
+    varying vec2 vTextCoord;
+    varying vec4 vColor;
 
-      void main() {
-        vec4 color = texture2D(uSampler, vTextCoord);
-        gl_FragColor = vec4(color.rgb * vColor.rgb * vColor.a, color.a * vColor.a);
-        //gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0); 
-      }
-      """;
+    void main() {
+      vec4 color = texture2D(uSampler, vTextCoord);
+      gl_FragColor = vec4(color.rgb * vColor.rgb * vColor.a, color.a * vColor.a);
+      //gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0); 
+    }
+    """;
 
   //---------------------------------------------------------------------------
   // aVertexPosition:   Float32(x), Float32(y)
@@ -43,14 +43,8 @@ class _ParticleRenderProgram extends RenderProgram {
   static const int _maxQuadCount = 1024;
 
   int _contextIdentifier = -1;
-  gl.RenderingContext _renderingContext;
-  gl.Program _program;
   gl.Buffer _vertexBuffer;
   gl.Buffer _indexBuffer;
-
-  Int16List _indexList = new Int16List(_maxQuadCount * 6);
-  Float32List _vertexList = new Float32List(_maxQuadCount * 4 * 8);
-
   gl.UniformLocation _uProjectionMatrixLocation;
   gl.UniformLocation _uGlobalMatrixLocation;
   gl.UniformLocation _uSamplerLocation;
@@ -60,7 +54,9 @@ class _ParticleRenderProgram extends RenderProgram {
   int _aVertexColorLocation = 0;
   int _quadCount = 0;
 
-  Matrix3D _globalMatrix = new Matrix3D.fromIdentity();
+  final Matrix3D _globalMatrix = new Matrix3D.fromIdentity();
+  final Int16List _indexList = new Int16List(_maxQuadCount * 6);
+  final Float32List _vertexList = new Float32List(_maxQuadCount * 4 * 8);
 
   _ParticleRenderProgram() {
     for(int i = 0, j = 0; i <= _indexList.length - 6; i += 6, j +=4 ) {
@@ -75,14 +71,64 @@ class _ParticleRenderProgram extends RenderProgram {
 
   //-----------------------------------------------------------------------------------------------
 
-  void set projectionMatrix(Matrix3D matrix) {
-    _renderingContext.uniformMatrix4fv(_uProjectionMatrixLocation, false, matrix.data);
-  }
-
   void set globalMatrix(Matrix globalMatrix) {
     _globalMatrix.copyFromMatrix2D(globalMatrix);
-    _renderingContext.uniformMatrix4fv(_uGlobalMatrixLocation, false, _globalMatrix.data);
+    renderingContext.uniformMatrix4fv(_uGlobalMatrixLocation, false, _globalMatrix.data);
   }
+
+  @override
+  void set projectionMatrix(Matrix3D matrix) {
+    renderingContext.uniformMatrix4fv(_uProjectionMatrixLocation, false, matrix.data);
+  }
+
+  @override
+  void activate(RenderContextWebGL renderContext) {
+
+    if (_contextIdentifier != renderContext.contextIdentifier) {
+
+      super.activate(renderContext);
+
+      _contextIdentifier = renderContext.contextIdentifier;
+      _indexBuffer = renderingContext.createBuffer();
+      _vertexBuffer = renderingContext.createBuffer();
+      _aVertexPositionLocation = attribLocations["aVertexPosition"];
+      _aVertexTextCoordLocation = attribLocations["aVertexTextCoord"];
+      _aVertexColorLocation = attribLocations["aVertexColor"];
+      _uProjectionMatrixLocation = uniformLocations["uProjectionMatrix"];
+      _uGlobalMatrixLocation = uniformLocations["uGlobalMatrix"];
+      _uSamplerLocation = uniformLocations["uSampler"];
+
+      renderingContext.enableVertexAttribArray(_aVertexPositionLocation);
+      renderingContext.enableVertexAttribArray(_aVertexTextCoordLocation);
+      renderingContext.enableVertexAttribArray(_aVertexColorLocation);
+      renderingContext.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _indexBuffer);
+      renderingContext.bufferDataTyped(gl.ELEMENT_ARRAY_BUFFER, _indexList, gl.STATIC_DRAW);
+      renderingContext.bindBuffer(gl.ARRAY_BUFFER, _vertexBuffer);
+      renderingContext.bufferData(gl.ARRAY_BUFFER, _vertexList, gl.DYNAMIC_DRAW);
+    }
+
+    renderingContext.useProgram(program);
+    renderingContext.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _indexBuffer);
+    renderingContext.bindBuffer(gl.ARRAY_BUFFER, _vertexBuffer);
+    renderingContext.vertexAttribPointer(_aVertexPositionLocation, 2, gl.FLOAT, false, 32, 0);
+    renderingContext.vertexAttribPointer(_aVertexTextCoordLocation, 2, gl.FLOAT, false, 32, 8);
+    renderingContext.vertexAttribPointer(_aVertexColorLocation, 4, gl.FLOAT, false, 32, 16);
+    renderingContext.uniform1i(_uSamplerLocation, 0);
+  }
+
+  @override
+  void flush() {
+
+    if (_quadCount == 0) return;
+    var vertexUpdate = new Float32List.view(_vertexList.buffer, 0, _quadCount * 4 * 8);
+
+    renderingContext.bufferSubData(gl.ARRAY_BUFFER, 0, vertexUpdate);
+    renderingContext.drawElements(gl.TRIANGLES, _quadCount * 6, gl.UNSIGNED_SHORT, 0);
+
+    _quadCount = 0;
+  }
+
+  //-----------------------------------------------------------------------------------------------
 
   void set renderTextureQuad(RenderTextureQuad renderTextureQuad) {
 
@@ -98,46 +144,6 @@ class _ParticleRenderProgram extends RenderProgram {
       _vertexList[index + 26] = uvList[6];
       _vertexList[index + 27] = uvList[7];
     }
-  }
-
-  //-----------------------------------------------------------------------------------------------
-
-  void activate(RenderContextWebGL renderContext) {
-
-    if (_contextIdentifier != renderContext.contextIdentifier) {
-
-      _contextIdentifier = renderContext.contextIdentifier;
-      _renderingContext = renderContext.rawContext;
-      _program = createProgram(_renderingContext, _vertexShaderSource, _fragmentShaderSource);
-
-      _aVertexPositionLocation = _renderingContext.getAttribLocation(_program, "aVertexPosition");
-      _aVertexTextCoordLocation = _renderingContext.getAttribLocation(_program, "aVertexTextCoord");
-      _aVertexColorLocation = _renderingContext.getAttribLocation(_program, "aVertexColor");
-
-      _uProjectionMatrixLocation = _renderingContext.getUniformLocation(_program, "uProjectionMatrix");
-      _uGlobalMatrixLocation = _renderingContext.getUniformLocation(_program, "uGlobalMatrix");
-      _uSamplerLocation = _renderingContext.getUniformLocation(_program, "uSampler");
-
-      _renderingContext.enableVertexAttribArray(_aVertexPositionLocation);
-      _renderingContext.enableVertexAttribArray(_aVertexTextCoordLocation);
-      _renderingContext.enableVertexAttribArray(_aVertexColorLocation);
-
-      _indexBuffer = _renderingContext.createBuffer();
-      _renderingContext.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _indexBuffer);
-      _renderingContext.bufferDataTyped(gl.ELEMENT_ARRAY_BUFFER, _indexList, gl.STATIC_DRAW);
-
-      _vertexBuffer = _renderingContext.createBuffer();
-      _renderingContext.bindBuffer(gl.ARRAY_BUFFER, _vertexBuffer);
-      _renderingContext.bufferData(gl.ARRAY_BUFFER, _vertexList, gl.DYNAMIC_DRAW);
-    }
-
-    _renderingContext.useProgram(_program);
-    _renderingContext.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _indexBuffer);
-    _renderingContext.bindBuffer(gl.ARRAY_BUFFER, _vertexBuffer);
-    _renderingContext.vertexAttribPointer(_aVertexPositionLocation, 2, gl.FLOAT, false, 32, 0);
-    _renderingContext.vertexAttribPointer(_aVertexTextCoordLocation, 2, gl.FLOAT, false, 32, 8);
-    _renderingContext.vertexAttribPointer(_aVertexColorLocation, 4, gl.FLOAT, false, 32, 16);
-    _renderingContext.uniform1i(_uSamplerLocation, 0);
   }
 
   //-----------------------------------------------------------------------------------------------
@@ -187,23 +193,6 @@ class _ParticleRenderProgram extends RenderProgram {
     _quadCount += 1;
 
     if (_quadCount == _maxQuadCount) flush();
-  }
-
-  //-----------------------------------------------------------------------------------------------
-
-  void flush() {
-
-    Float32List vertexUpdate = _vertexList;
-
-    if (_quadCount == 0) {
-      return;
-    } else if (_quadCount < _maxQuadCount) {
-      vertexUpdate = new Float32List.view(_vertexList.buffer, 0, _quadCount * 4 * 8);
-    }
-
-    _renderingContext.bufferSubData(gl.ARRAY_BUFFER, 0, vertexUpdate);
-    _renderingContext.drawElements(gl.TRIANGLES, _quadCount * 6, gl.UNSIGNED_SHORT, 0);
-    _quadCount = 0;
   }
 
 }
