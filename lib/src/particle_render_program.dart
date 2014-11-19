@@ -91,9 +91,9 @@ class _ParticleRenderProgram extends RenderProgram {
       _contextIdentifier = renderContext.contextIdentifier;
       _indexBuffer = renderingContext.createBuffer();
       _vertexBuffer = renderingContext.createBuffer();
-      _aVertexPositionLocation = attribLocations["aVertexPosition"];
-      _aVertexTextCoordLocation = attribLocations["aVertexTextCoord"];
-      _aVertexColorLocation = attribLocations["aVertexColor"];
+      _aVertexPositionLocation = attributeLocations["aVertexPosition"];
+      _aVertexTextCoordLocation = attributeLocations["aVertexTextCoord"];
+      _aVertexColorLocation = attributeLocations["aVertexColor"];
       _uProjectionMatrixLocation = uniformLocations["uProjectionMatrix"];
       _uGlobalMatrixLocation = uniformLocations["uGlobalMatrix"];
       _uSamplerLocation = uniformLocations["uSampler"];
