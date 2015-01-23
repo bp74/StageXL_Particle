@@ -42,7 +42,6 @@ class _ParticleRenderProgram extends RenderProgram {
 
   static const int _maxQuadCount = 1024;
 
-  int _contextIdentifier = -1;
   gl.Buffer _vertexBuffer;
   gl.Buffer _indexBuffer;
   gl.UniformLocation _uProjectionMatrixLocation;
@@ -84,11 +83,10 @@ class _ParticleRenderProgram extends RenderProgram {
   @override
   void activate(RenderContextWebGL renderContext) {
 
-    if (_contextIdentifier != renderContext.contextIdentifier) {
+    if (this.contextIdentifier != renderContext.contextIdentifier) {
 
       super.activate(renderContext);
 
-      _contextIdentifier = renderContext.contextIdentifier;
       _indexBuffer = renderingContext.createBuffer();
       _vertexBuffer = renderingContext.createBuffer();
       _aVertexPositionLocation = attributeLocations["aVertexPosition"];
