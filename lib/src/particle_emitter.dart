@@ -275,8 +275,9 @@ class ParticleEmitter extends DisplayObject implements Animatable {
 
     } else if (renderContext is RenderContextWebGL) {
 
-      var renderProgram = _ParticleRenderProgram.instance;
       var renderTextureQuad = _renderTextureQuads[0];
+      var renderProgram = renderContext.getRenderProgram(
+          r"$ParticleRenderProgram", () => new _ParticleRenderProgram());
 
       renderContext.activateRenderProgram(renderProgram);
       renderContext.activateRenderTexture(renderTextureQuad.renderTexture);
