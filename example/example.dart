@@ -6,7 +6,10 @@ import 'package:stagexl_particle/stagexl_particle.dart';
 
 void main() {
 
-  var stage = new Stage(html.querySelector('#stage'), webGL: true, color: Color.Black);
+  StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
+  StageXL.stageOptions.backgroundColor = Color.Black;
+
+  var stage = new Stage(html.querySelector('#stage'));
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 

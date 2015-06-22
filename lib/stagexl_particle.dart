@@ -3,7 +3,6 @@ library stagexl_particle;
 import 'dart:math' hide Point, Rectangle;
 import 'dart:html' show CanvasElement, CanvasRenderingContext2D;
 import 'dart:web_gl' as gl;
-import 'dart:typed_data';
 
 import 'package:stagexl/stagexl.dart';
 
@@ -18,7 +17,6 @@ part 'src/particle.dart';
 part 'src/particle_color.dart';
 part 'src/particle_emitter.dart';
 part 'src/particle_render_program.dart';
-
 
 
 bool _ensureBool(bool value) {

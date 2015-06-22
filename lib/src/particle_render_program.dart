@@ -51,7 +51,7 @@ class _ParticleRenderProgram extends RenderProgram {
   //---------------------------------------------------------------------------
 
   void set globalMatrix(Matrix globalMatrix) {
-    _globalMatrix.copyFromMatrix2D(globalMatrix);
+    _globalMatrix.copyFrom2D(globalMatrix);
     renderingContext.uniformMatrix4fv(uniforms["uGlobalMatrix"], false, _globalMatrix.data);
   }
 

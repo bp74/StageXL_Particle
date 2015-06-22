@@ -7,7 +7,7 @@ class ParticleEmitter extends DisplayObject implements Animatable {
   _Particle _rootParticle;
   _Particle _lastParticle;
 
-  RenderTexture _renderTexture = new RenderTexture(1024, 32, true, Color.Transparent, 1.0);
+  RenderTexture _renderTexture = new RenderTexture(1024, 32, Color.Transparent);
   List<RenderTextureQuad> _renderTextureQuads = new List<RenderTextureQuad>();
   int _particleCount = 0;
   num _frameTime = 0.0;
