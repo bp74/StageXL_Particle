@@ -4,10 +4,10 @@ author: Bernhard Pichler <support@stagexl.org>
 description: The particle emitter runtime for the StageXL library.
 homepage: http://www.stagexl.org
 environment:
-  sdk: '>=1.9.0 <2.0.0'
+  sdk: '>=1.13.0 <2.0.0'
 dependencies:
   browser: any
-  stagexl: '>=0.12.0 <0.13.0'
+  stagexl: '>=0.13.0 <0.14.0'
 transformers:
 - $dart2js:
     commandLineOptions: ["--trust-type-annotations", "--trust-primitives", "--dump-info"]

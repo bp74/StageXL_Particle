@@ -139,12 +139,12 @@ class _Particle {
     if (index > 31) index = 31;
 
     var renderTextureQuad = _particleEmitter._renderTextureQuads[index];
-    var xyList = renderTextureQuad.xyList;
     var source = renderTextureQuad.renderTexture.canvas;
-    var sourceX = xyList[0];
-    var sourceY = xyList[1];
-    var sourceWidth = xyList[4] - sourceX;
-    var sourceHeight = xyList[5] - sourceY;
+    var sourceRectangle = renderTextureQuad.sourceRectangle;
+    var sourceX = sourceRectangle.left;
+    var sourceY = sourceRectangle.top;
+    var sourceWidth = sourceRectangle.width;
+    var sourceHeight = sourceRectangle.height;
     var destinationX = _x - _size / 2.0;
     var destinationY = _y - _size / 2.0;
     var destinationWidth= _size;
@@ -156,6 +156,8 @@ class _Particle {
   }
 
   _renderParticleWegGL(_ParticleRenderProgram renderProgram) {
-    renderProgram.renderParticle(_x, _y, _size, _colorR, _colorG, _colorB, _colorA);
+    renderProgram.renderParticle(
+        _particleEmitter._renderTextureQuads[0],
+        _x, _y, _size, _colorR, _colorG, _colorB, _colorA);
   }
 }

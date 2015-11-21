@@ -281,7 +281,6 @@ class ParticleEmitter extends DisplayObject implements Animatable {
 
       renderContext.activateRenderProgram(renderProgram);
       renderContext.activateRenderTexture(renderTextureQuad.renderTexture);
-      renderProgram.renderTextureQuad = renderTextureQuad;
       renderProgram.globalMatrix = globalMatrix;
 
       for(int i = 0; i < _particleCount; i++) {
