@@ -7,7 +7,8 @@ environment:
   sdk: '>=1.13.0 <2.0.0'
 dependencies:
   browser: any
-  stagexl: '>=0.13.0 <0.14.0'
+  stagexl:
+    git: https://github.com/mnordine/StageXL
 transformers:
 - $dart2js:
     commandLineOptions: ["--trust-type-annotations", "--trust-primitives", "--dump-info"]
