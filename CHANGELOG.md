@@ -4,6 +4,9 @@ This file contains highlights of what changes on each version of the StageXL_Par
 package. This file is normally updated whenever we push a new version to pub.
 
 #### Pub version 0.3.7
+  * Updated to StageXL 1.0.0
+
+#### Pub version 0.3.7
   * Updated to StageXL 0.13.0
   
 #### Pub version 0.3.6
