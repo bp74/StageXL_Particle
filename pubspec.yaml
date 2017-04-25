@@ -9,7 +9,7 @@ environment:
 
 dependencies:
   browser: any
-  stagexl: '^1.0.0'
+  stagexl: '^1.1.0'
 
 transformers:
 - $dart2js:
