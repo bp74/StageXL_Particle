@@ -8,7 +8,10 @@ environment:
 dependencies:
   browser: any
   stagexl:
-    git: https://github.com/mnordine/StageXL
+    git: 
+      url: https://github.com/mnordine/StageXL.git
+      ref: dpi-fix
+          
 transformers:
 - $dart2js:
     commandLineOptions: ["--trust-type-annotations", "--trust-primitives", "--dump-info"]
