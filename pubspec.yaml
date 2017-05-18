@@ -10,7 +10,7 @@ dependencies:
   stagexl:
     git: 
       url: https://github.com/mnordine/StageXL
-      ref: dpi-fix
+      ref: dpi-fix2
           
 transformers:
 - $dart2js:
