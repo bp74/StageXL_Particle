@@ -9,7 +9,7 @@ dependencies:
   browser: any
   stagexl:
     git: 
-      url: https://github.com/mnordine/StageXL.git
+      url: https://github.com/mnordine/StageXL
       ref: dpi-fix
           
 transformers:
