@@ -44,7 +44,7 @@ void main() {
 
   //-------------------------
 
-  var mouseEventListener = (me) {
+  var mouseEventListener = (MouseEvent me) {
     if (me.buttonDown) particleEmitter.setEmitterLocation(me.localX, me.localY);
   };
 
