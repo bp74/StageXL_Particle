@@ -7,11 +7,8 @@ environment:
   sdk: '>=1.13.0 <2.0.0'
 dependencies:
   browser: any
-  stagexl:
-    git: 
-      url: https://github.com/mnordine/StageXL
-      ref: dpi-fix2
-          
+  stagexl: '>=0.13.0 <0.14.0'
+
 transformers:
 - $dart2js:
     commandLineOptions: ["--trust-type-annotations", "--trust-primitives", "--dump-info"]
