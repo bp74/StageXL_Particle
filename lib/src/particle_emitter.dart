@@ -7,7 +7,7 @@ class ParticleEmitter extends DisplayObject implements Animatable {
   _Particle _rootParticle;
   _Particle _lastParticle;
 
-  RenderTexture _renderTexture = new RenderTexture(1024, 32, Color.Transparent);
+  RenderTexture _renderTexture;
   List<RenderTextureQuad> _renderTextureQuads = new List<RenderTextureQuad>();
   int _particleCount = 0;
   num _frameTime = 0.0;
@@ -33,6 +33,8 @@ class ParticleEmitter extends DisplayObject implements Animatable {
   num _endSize = 0.0;
   num _endSizeVariance = 0.0;
   String _shape = "circle";
+
+  BitmapData _image;
 
   // gravity configuration
   num _gravityX = 0.0;
@@ -69,8 +71,20 @@ class ParticleEmitter extends DisplayObject implements Animatable {
     _frameTime = 0.0;
     _particleCount = 0;
 
-    for(int i = 0; i < 32; i++) {
-      _renderTextureQuads.add(_renderTexture.quad.cut(new Rectangle(i * 32, 0, 32, 32)));
+    // Just use a single render texture quad if given an image, else generate 32
+    _image = config['image'];
+    if (_image != null)
+    {
+      _renderTexture = _image.renderTexture;
+      _renderTextureQuads.add(_image.renderTextureQuad);
+    }
+    else
+    {
+      _renderTexture = new RenderTexture(1024, 32, Color.Transparent);
+
+      for(int i = 0; i < 32; i++) {
+        _renderTextureQuads.add(_renderTexture.quad.cut(new Rectangle(i * 32, 0, 32, 32)));
+      }
     }
 
     updateConfig(config);
@@ -81,39 +95,44 @@ class ParticleEmitter extends DisplayObject implements Animatable {
 
   void _drawParticleTexture() {
 
-    CanvasRenderingContext2D context = _renderTexture.canvas.context2D;
-    context.setTransform(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-    context.globalAlpha = 1.0;
-    context.clearRect(0, 0, 1024, 32);
+    // Use Canvas2D to draw if no image given
+    if (_image == null)
+    {
+      CanvasRenderingContext2D context = _renderTexture.canvas.context2D;
+      context.setTransform(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+      context.globalAlpha = 1.0;
+      context.clearRect(0, 0, 1024, 32);
 
-    for(int i = 0; i < 32; i++) {
+      for(int i = 0; i < 32; i++) {
 
-      int radius = 15;
-      num targetX = i * 32 + 15.5;
-      num targetY = 15.5;
+        int radius = 15;
+        num targetX = i * 32 + 15.5;
+        num targetY = 15.5;
 
-      num colorR = _startColor.red   + i * (_endColor.red   - _startColor.red  ) / 31;
-      num colorG = _startColor.green + i * (_endColor.green - _startColor.green) / 31;
-      num colorB = _startColor.blue  + i * (_endColor.blue  - _startColor.blue ) / 31;
-      num colorA = _startColor.alpha + i * (_endColor.alpha - _startColor.alpha) / 31;
+        num colorR = _startColor.red   + i * (_endColor.red   - _startColor.red  ) / 31;
+        num colorG = _startColor.green + i * (_endColor.green - _startColor.green) / 31;
+        num colorB = _startColor.blue  + i * (_endColor.blue  - _startColor.blue ) / 31;
+        num colorA = _startColor.alpha + i * (_endColor.alpha - _startColor.alpha) / 31;
 
-      if (i == 0) colorR = colorG = colorB = colorA = 1.0;
+        if (i == 0) colorR = colorG = colorB = colorA = 1.0;
 
-      int colorIntR = (255.0 * colorR).toInt();
-      int colorIntG = (255.0 * colorG).toInt();
-      int colorIntB = (255.0 * colorB).toInt();
+        int colorIntR = (255.0 * colorR).toInt();
+        int colorIntG = (255.0 * colorG).toInt();
+        int colorIntB = (255.0 * colorB).toInt();
 
-      var gradient = context.createRadialGradient(targetX, targetY, 0, targetX, targetY, radius);
-      gradient.addColorStop(0.00, "rgba($colorIntR, $colorIntG, $colorIntB, $colorA)");
-      gradient.addColorStop(1.00, "rgba($colorIntR, $colorIntG, $colorIntB, 0.0)");
-      context.beginPath();
-      context.moveTo(targetX + radius, targetY);
-      context.arc(targetX, targetY, radius, 0, PI * 2.0, false);
-      context.fillStyle = gradient;
-      context.fill();
+        var gradient = context.createRadialGradient(targetX, targetY, 0, targetX, targetY, radius);
+        gradient.addColorStop(0.00, "rgba($colorIntR, $colorIntG, $colorIntB, $colorA)");
+        gradient.addColorStop(1.00, "rgba($colorIntR, $colorIntG, $colorIntB, 0.0)");
+        context.beginPath();
+        context.moveTo(targetX + radius, targetY);
+        context.arc(targetX, targetY, radius, 0, PI * 2.0, false);
+        context.fillStyle = gradient;
+        context.fill();
+      }
+
+      _renderTexture.update();
     }
 
-    _renderTexture.update();
   }
 
   //-------------------------------------------------------------------------------------------------
@@ -158,6 +177,8 @@ class ParticleEmitter extends DisplayObject implements Animatable {
     _endSize = _ensureNum(config["finishSize"]);
     _endSizeVariance = _ensureNum(config["finishSizeVariance"]);
     _shape = config["shape"];
+
+    _image = config['image'];
 
     _locationXVariance = _ensureNum(config["locationVariance"]["x"]);
     _locationYVariance = _ensureNum(config["locationVariance"]["y"]);
