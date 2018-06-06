@@ -1,5 +1,7 @@
 The StageXL Particle library is an extension to the StageXL Library to show particle effects. You can use particle effects to simulate fire, smoke, explosions or similar things. Often those effects will make your game visually more appealing.
 
+*NOTE:* as of version 0.10.0-dev, `StageXL_Particle` requires a Dart 2 SDK.
+
 ## Particle Emitter
 
 The particle emitter is a DisplayObject you can add to the display list. It is also the origin where all particles are emitted. Use the particle designer on the StageXL homepage to configure all the parameters necessary to get a great looking particle emitter.    
