@@ -2,7 +2,6 @@ library stagexl_particle;
 
 import 'dart:math' hide Point, Rectangle;
 import 'dart:html' show CanvasElement, CanvasRenderingContext2D;
-import 'dart:web_gl' as gl;
 
 import 'package:stagexl/stagexl.dart';
 
