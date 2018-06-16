@@ -108,7 +108,7 @@ class ParticleEmitter extends DisplayObject implements Animatable {
       gradient.addColorStop(1.00, "rgba($colorIntR, $colorIntG, $colorIntB, 0.0)");
       context.beginPath();
       context.moveTo(targetX + radius, targetY);
-      context.arc(targetX, targetY, radius, 0, PI * 2.0, false);
+      context.arc(targetX, targetY, radius, 0, pi * 2.0, false);
       context.fillStyle = gradient;
       context.fill();
     }
@@ -163,8 +163,8 @@ class ParticleEmitter extends DisplayObject implements Animatable {
     _locationYVariance = _ensureNum(config["locationVariance"]["y"]);
     _speed = _ensureNum(config["speed"]);
     _speedVariance = _ensureNum(config["speedVariance"]);
-    _angle = _ensureNum(config["angle"]) * PI / 180.0;
-    _angleVariance = _ensureNum(config["angleVariance"]) * PI / 180.0;
+    _angle = _ensureNum(config["angle"]) * pi / 180.0;
+    _angleVariance = _ensureNum(config["angleVariance"]) * pi / 180.0;
     _gravityX = _ensureNum(config["gravity"]["x"]);
     _gravityY = _ensureNum(config["gravity"]["y"]);
     _radialAcceleration = _ensureNum(config["radialAcceleration"]);
@@ -175,14 +175,14 @@ class ParticleEmitter extends DisplayObject implements Animatable {
     _minRadius = _ensureNum(config["minRadius"]);
     _maxRadius = _ensureNum(config["maxRadius"]);
     _maxRadiusVariance = _ensureNum(config["maxRadiusVariance"]);
-    _rotatePerSecond = _ensureNum(config["rotatePerSecond"]) * PI / 180.0;
-    _rotatePerSecondVariance = _ensureNum(config["rotatePerSecondVariance"]) * PI / 180.0;
+    _rotatePerSecond = _ensureNum(config["rotatePerSecond"]) * pi / 180.0;
+    _rotatePerSecondVariance = _ensureNum(config["rotatePerSecondVariance"]) * pi / 180.0;
 
     _compositeOperation = config["compositeOperation"];
     _startColor = new _ParticleColor.fromJSON(config["startColor"]);
     _endColor = new _ParticleColor.fromJSON(config["finishColor"]);
 
-    if (_duration <= 0) _duration = double.INFINITY;
+    if (_duration <= 0) _duration = double.infinity;
     _emissionTime = _duration;
 
     _drawParticleTexture();
@@ -199,7 +199,7 @@ class ParticleEmitter extends DisplayObject implements Animatable {
 
     for (int i = 0; i < particleCount; i++) {
 
-      var nextParticle = particle._nextParticle as _Particle;
+      var nextParticle = particle._nextParticle;
 
       if (nextParticle._advanceParticle(passedTime)) {
         particle = nextParticle;
