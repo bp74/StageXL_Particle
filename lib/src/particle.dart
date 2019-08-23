@@ -1,7 +1,6 @@
 part of stagexl_particle;
 
 class _Particle {
-
   final ParticleEmitter _particleEmitter;
 
   num _currentTime = 0.0;
@@ -38,7 +37,6 @@ class _Particle {
   //-----------------------------------------------------------------------------------------------
 
   _initParticle() {
-
     var pe = _particleEmitter;
     var totalTime = pe._lifespan + pe._lifespanVariance * pe._randomVariance;
     if (totalTime < 0.01) totalTime = 0.01;
@@ -60,8 +58,10 @@ class _Particle {
     _emitRadiusDelta = pe._maxRadius / _totalTime;
     _emitRotation = pe._angle + pe._angleVariance * pe._randomVariance;
     _emitRotationDelta = pe._rotatePerSecond + pe._rotatePerSecondVariance * pe._randomVariance;
-    _radialAcceleration = pe._radialAcceleration + pe._radialAccelerationVariance * pe._randomVariance;
-    _tangentialAcceleration = pe._tangentialAcceleration + pe._tangentialAccelerationVariance * pe._randomVariance;
+    _radialAcceleration =
+        pe._radialAcceleration + pe._radialAccelerationVariance * pe._randomVariance;
+    _tangentialAcceleration =
+        pe._tangentialAcceleration + pe._tangentialAccelerationVariance * pe._randomVariance;
 
     num size1 = pe._startSize + pe._startSizeVariance * pe._randomVariance;
     num size2 = pe._endSize + pe._endSizeVariance * pe._randomVariance;
@@ -74,16 +74,15 @@ class _Particle {
     _colorG = pe._startColor.green;
     _colorB = pe._startColor.blue;
     _colorA = pe._startColor.alpha;
-    _colorDeltaR = (pe._endColor.red   - _colorR)   / _totalTime;
+    _colorDeltaR = (pe._endColor.red - _colorR) / _totalTime;
     _colorDeltaG = (pe._endColor.green - _colorG) / _totalTime;
-    _colorDeltaB = (pe._endColor.blue  - _colorB)  / _totalTime;
+    _colorDeltaB = (pe._endColor.blue - _colorB) / _totalTime;
     _colorDeltaA = (pe._endColor.alpha - _colorA) / _totalTime;
   }
 
   //-----------------------------------------------------------------------------------------------
 
   bool _advanceParticle(num passedTime) {
-
     var pe = _particleEmitter;
     var restTime = _totalTime - _currentTime;
     if (restTime <= 0.0) return false;
@@ -92,18 +91,15 @@ class _Particle {
     _currentTime += passedTime;
 
     if (pe._emitterType == ParticleEmitter.EMITTER_TYPE_RADIAL) {
-
       _emitRotation += _emitRotationDelta * passedTime;
-      _emitRadius   -= _emitRadiusDelta   * passedTime;
+      _emitRadius -= _emitRadiusDelta * passedTime;
       _x = pe._locationX - cos(_emitRotation) * _emitRadius;
       _y = pe._locationY - sin(_emitRotation) * _emitRadius;
 
       if (_emitRadius < pe._minRadius) {
         _currentTime = _totalTime;
       }
-
     } else {
-
       num distanceX = _x - _startX;
       num distanceY = _y - _startY;
       num distanceScalar = sqrt(distanceX * distanceX + distanceY * distanceY);
@@ -114,8 +110,10 @@ class _Particle {
       var gravityX = pe._gravityX;
       var gravityY = pe._gravityY;
 
-      _velocityX += passedTime * (gravityX + distanceX * _radialAcceleration - distanceY * _tangentialAcceleration);
-      _velocityY += passedTime * (gravityY + distanceY * _radialAcceleration + distanceX * _tangentialAcceleration);
+      _velocityX += passedTime *
+          (gravityX + distanceX * _radialAcceleration - distanceY * _tangentialAcceleration);
+      _velocityY += passedTime *
+          (gravityY + distanceY * _radialAcceleration + distanceX * _tangentialAcceleration);
       _x += _velocityX * passedTime;
       _y += _velocityY * passedTime;
     }
@@ -133,7 +131,6 @@ class _Particle {
   //-----------------------------------------------------------------------------------------------
 
   _renderParticleCanvas(CanvasRenderingContext2D context) {
-
     var index = 1 + _currentTime * 31 ~/ _totalTime;
     if (index < 1) index = 1;
     if (index > 31) index = 31;
@@ -147,17 +144,15 @@ class _Particle {
     var sourceHeight = sourceRectangle.height;
     var destinationX = _x - _size / 2.0;
     var destinationY = _y - _size / 2.0;
-    var destinationWidth= _size;
+    var destinationWidth = _size;
     var destinationHeight = _size;
 
-    context.drawImageScaledFromSource(source,
-      sourceX, sourceY, sourceWidth, sourceHeight,
-      destinationX, destinationY, destinationWidth, destinationHeight);
+    context.drawImageScaledFromSource(source, sourceX, sourceY, sourceWidth, sourceHeight,
+        destinationX, destinationY, destinationWidth, destinationHeight);
   }
 
   _renderParticleWegGL(_ParticleRenderProgram renderProgram) {
     renderProgram.renderParticle(
-        _particleEmitter._renderTextureQuads[0],
-        _x, _y, _size, _colorR, _colorG, _colorB, _colorA);
+        _particleEmitter._renderTextureQuads[0], _x, _y, _size, _colorR, _colorG, _colorB, _colorA);
   }
 }

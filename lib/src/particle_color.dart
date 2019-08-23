@@ -1,7 +1,6 @@
 part of stagexl_particle;
 
 class _ParticleColor {
-
   num red = 0.0;
   num green = 0.0;
   num blue = 0.0;
