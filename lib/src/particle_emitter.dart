@@ -1,14 +1,13 @@
 part of stagexl_particle;
 
 class ParticleEmitter extends DisplayObject implements Animatable {
-
   final Random _random = new Random();
 
-  _Particle _rootParticle;
-  _Particle _lastParticle;
+  _Particle? _rootParticle;
+  _Particle? _lastParticle;
 
   RenderTexture _renderTexture = new RenderTexture(1024, 32, Color.Transparent);
-  List<RenderTextureQuad> _renderTextureQuads = new List<RenderTextureQuad>();
+  List<RenderTextureQuad> _renderTextureQuads = <RenderTextureQuad>[];
   int _particleCount = 0;
   num _frameTime = 0.0;
   num _emissionTime = 0.0;
@@ -32,7 +31,7 @@ class ParticleEmitter extends DisplayObject implements Animatable {
   num _startSizeVariance = 0.0;
   num _endSize = 0.0;
   num _endSizeVariance = 0.0;
-  String _shape = "circle";
+  String? _shape = "circle";
 
   // gravity configuration
   num _gravityX = 0.0;
@@ -54,14 +53,13 @@ class ParticleEmitter extends DisplayObject implements Animatable {
   num _rotatePerSecondVariance = 0.0;
 
   // color configuration
-  String _compositeOperation;
-  _ParticleColor _startColor;
-  _ParticleColor _endColor;
+  String? _compositeOperation;
+  late _ParticleColor _startColor;
+  late _ParticleColor _endColor;
 
   //-------------------------------------------------------------------------------------------------
 
   ParticleEmitter(Map config) {
-
     _rootParticle = new _Particle(this);
     _lastParticle = _rootParticle;
 
@@ -69,8 +67,9 @@ class ParticleEmitter extends DisplayObject implements Animatable {
     _frameTime = 0.0;
     _particleCount = 0;
 
-    for(int i = 0; i < 32; i++) {
-      _renderTextureQuads.add(_renderTexture.quad.cut(new Rectangle(i * 32, 0, 32, 32)));
+    for (int i = 0; i < 32; i++) {
+      _renderTextureQuads
+          .add(_renderTexture.quad.cut(new Rectangle(i * 32, 0, 32, 32)));
     }
 
     updateConfig(config);
@@ -80,22 +79,23 @@ class ParticleEmitter extends DisplayObject implements Animatable {
   //-------------------------------------------------------------------------------------------------
 
   void _drawParticleTexture() {
-
     CanvasRenderingContext2D context = _renderTexture.canvas.context2D;
     context.setTransform(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
     context.globalAlpha = 1.0;
     context.clearRect(0, 0, 1024, 32);
 
-    for(int i = 0; i < 32; i++) {
-
+    for (int i = 0; i < 32; i++) {
       int radius = 15;
       num targetX = i * 32 + 15.5;
       num targetY = 15.5;
 
-      num colorR = _startColor.red   + i * (_endColor.red   - _startColor.red  ) / 31;
-      num colorG = _startColor.green + i * (_endColor.green - _startColor.green) / 31;
-      num colorB = _startColor.blue  + i * (_endColor.blue  - _startColor.blue ) / 31;
-      num colorA = _startColor.alpha + i * (_endColor.alpha - _startColor.alpha) / 31;
+      num colorR = _startColor.red + i * (_endColor.red - _startColor.red) / 31;
+      num colorG =
+          _startColor.green + i * (_endColor.green - _startColor.green) / 31;
+      num colorB =
+          _startColor.blue + i * (_endColor.blue - _startColor.blue) / 31;
+      num colorA =
+          _startColor.alpha + i * (_endColor.alpha - _startColor.alpha) / 31;
 
       if (i == 0) colorR = colorG = colorB = colorA = 1.0;
 
@@ -103,9 +103,12 @@ class ParticleEmitter extends DisplayObject implements Animatable {
       int colorIntG = (255.0 * colorG).toInt();
       int colorIntB = (255.0 * colorB).toInt();
 
-      var gradient = context.createRadialGradient(targetX, targetY, 0, targetX, targetY, radius);
-      gradient.addColorStop(0.00, "rgba($colorIntR, $colorIntG, $colorIntB, $colorA)");
-      gradient.addColorStop(1.00, "rgba($colorIntR, $colorIntG, $colorIntB, 0.0)");
+      var gradient = context.createRadialGradient(
+          targetX, targetY, 0, targetX, targetY, radius);
+      gradient.addColorStop(
+          0.00, "rgba($colorIntR, $colorIntG, $colorIntB, $colorA)");
+      gradient.addColorStop(
+          1.00, "rgba($colorIntR, $colorIntG, $colorIntB, 0.0)");
       context.beginPath();
       context.moveTo(targetX + radius, targetY);
       context.arc(targetX, targetY, radius, 0, pi * 2.0, false);
@@ -118,11 +121,10 @@ class ParticleEmitter extends DisplayObject implements Animatable {
 
   //-------------------------------------------------------------------------------------------------
 
-  void start([num duration]) {
+  void start([num? duration]) {
     _emissionTime = _duration;
 
-    if (duration != null && duration is num)
-      _emissionTime = duration;
+    if (duration != null && duration is num) _emissionTime = duration;
   }
 
   void stop(bool clear) {
@@ -144,7 +146,6 @@ class ParticleEmitter extends DisplayObject implements Animatable {
   //-------------------------------------------------------------------------------------------------
 
   void updateConfig(Map config) {
-
     _emitterType = _ensureInt(config["emitterType"]);
     _locationX = _ensureNum(config["location"]["x"]);
     _locationY = _ensureNum(config["location"]["y"]);
@@ -168,15 +169,18 @@ class ParticleEmitter extends DisplayObject implements Animatable {
     _gravityX = _ensureNum(config["gravity"]["x"]);
     _gravityY = _ensureNum(config["gravity"]["y"]);
     _radialAcceleration = _ensureNum(config["radialAcceleration"]);
-    _radialAccelerationVariance = _ensureNum(config["radialAccelerationVariance"]);
+    _radialAccelerationVariance =
+        _ensureNum(config["radialAccelerationVariance"]);
     _tangentialAcceleration = _ensureNum(config["tangentialAcceleration"]);
-    _tangentialAccelerationVariance = _ensureNum(config["tangentialAccelerationVariance"]);
+    _tangentialAccelerationVariance =
+        _ensureNum(config["tangentialAccelerationVariance"]);
 
     _minRadius = _ensureNum(config["minRadius"]);
     _maxRadius = _ensureNum(config["maxRadius"]);
     _maxRadiusVariance = _ensureNum(config["maxRadiusVariance"]);
     _rotatePerSecond = _ensureNum(config["rotatePerSecond"]) * pi / 180.0;
-    _rotatePerSecondVariance = _ensureNum(config["rotatePerSecondVariance"]) * pi / 180.0;
+    _rotatePerSecondVariance =
+        _ensureNum(config["rotatePerSecondVariance"]) * pi / 180.0;
 
     _compositeOperation = config["compositeOperation"];
     _startColor = new _ParticleColor.fromJSON(config["startColor"]);
@@ -191,15 +195,13 @@ class ParticleEmitter extends DisplayObject implements Animatable {
   //-------------------------------------------------------------------------------------------------
 
   bool advanceTime(num passedTime) {
-
     var particle = _rootParticle;
     var particleCount = _particleCount;
 
     // advance existing particles
 
     for (int i = 0; i < particleCount; i++) {
-
-      var nextParticle = particle._nextParticle;
+      var nextParticle = particle!._nextParticle!;
 
       if (nextParticle._advanceParticle(passedTime)) {
         particle = nextParticle;
@@ -208,9 +210,9 @@ class ParticleEmitter extends DisplayObject implements Animatable {
 
       if (nextParticle._nextParticle != null) {
         particle._nextParticle = nextParticle._nextParticle;
-        _lastParticle._nextParticle = nextParticle;
+        _lastParticle!._nextParticle = nextParticle;
         _lastParticle = nextParticle;
-        _lastParticle._nextParticle = null;
+        _lastParticle!._nextParticle = null;
       }
 
       _particleCount--;
@@ -219,18 +221,16 @@ class ParticleEmitter extends DisplayObject implements Animatable {
     // create and advance new particles
 
     if (_emissionTime > 0.0) {
-
       num timeBetweenParticles = _lifespan / _maxNumParticles;
       _frameTime += passedTime;
 
       while (_frameTime > 0.0) {
-
         if (_particleCount < _maxNumParticles) {
-
-          var nextParticle = particle._nextParticle;
+          var nextParticle = particle!._nextParticle;
 
           if (nextParticle == null) {
-            nextParticle = _lastParticle = particle._nextParticle = new _Particle(this);
+            nextParticle =
+                _lastParticle = particle._nextParticle = new _Particle(this);
           }
 
           particle = nextParticle;
@@ -254,7 +254,6 @@ class ParticleEmitter extends DisplayObject implements Animatable {
   //-------------------------------------------------------------------------------------------------
 
   void render(RenderState renderState) {
-
     var renderContext = renderState.renderContext;
     var globalAlpha = renderState.globalAlpha;
     var globalMatrix = renderState.globalMatrix;
@@ -263,18 +262,15 @@ class ParticleEmitter extends DisplayObject implements Animatable {
     // renderState.renderQuad(_renderTextureQuads[0].renderTexture.quad);
 
     if (renderContext is RenderContextCanvas) {
-
       var context = renderContext.rawContext;
       renderContext.setTransform(globalMatrix);
       renderContext.setAlpha(globalAlpha);
 
-      for(int i = 0; i < _particleCount; i++) {
-        particle = particle._nextParticle;
-        particle._renderParticleCanvas(context);
+      for (int i = 0; i < _particleCount; i++) {
+        particle = particle!._nextParticle;
+        particle!._renderParticleCanvas(context);
       }
-
     } else if (renderContext is RenderContextWebGL) {
-
       var renderTextureQuad = _renderTextureQuads[0];
       var renderProgram = renderContext.getRenderProgram(
           r"$ParticleRenderProgram", () => new _ParticleRenderProgram());
@@ -283,11 +279,10 @@ class ParticleEmitter extends DisplayObject implements Animatable {
       renderContext.activateRenderTexture(renderTextureQuad.renderTexture);
       renderProgram.globalMatrix = globalMatrix;
 
-      for(int i = 0; i < _particleCount; i++) {
-        particle = particle._nextParticle;
-        particle._renderParticleWegGL(renderProgram);
+      for (int i = 0; i < _particleCount; i++) {
+        particle = particle!._nextParticle;
+        particle!._renderParticleWegGL(renderProgram);
       }
     }
   }
-
 }

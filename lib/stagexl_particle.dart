@@ -26,7 +26,7 @@ bool _ensureBool(bool value) {
   }
 }
 
-int _ensureInt(int value) {
+int _ensureInt(int? value) {
   if (value is int) {
     return value;
   } else {
@@ -34,7 +34,7 @@ int _ensureInt(int value) {
   }
 }
 
-num _ensureNum(num value) {
+num _ensureNum(num? value) {
   if (value is num) {
     return value;
   } else {

@@ -3,6 +3,11 @@
 This file contains highlights of what changes on each version of the StageXL_Particle
 package. This file is normally updated whenever we push a new version to pub.
 
+#### Pub version 1.0.0
+* Raised dependency to StageXL 2.0.0
+* Update Dart SDK restraint to >= 2.12.0
+* Upgrade to null safety
+
 #### Pub version 0.4.0
   * Raised dependency to StageXL 1.4.0
   * Ready for Dart 2.0 stable

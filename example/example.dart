@@ -9,13 +9,13 @@ void main() {
   StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
   StageXL.stageOptions.backgroundColor = Color.Black;
 
-  var stage = new Stage(html.querySelector('#stage'));
-  var renderLoop = new RenderLoop();
+  Stage stage = new Stage(html.querySelector('#stage') as html.CanvasElement);
+  RenderLoop renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
   //-------------------------
 
-  var particleConfig = {
+  Map particleConfig = {
     "maxParticles":2000,
     "duration":0,
     "lifeSpan":0.7, "lifespanVariance":0.2,
@@ -48,7 +48,7 @@ void main() {
     if (me.buttonDown) particleEmitter.setEmitterLocation(me.localX, me.localY);
   };
 
-  var glassPlate = new GlassPlate(800, 600);
+  GlassPlate glassPlate = new GlassPlate(800, 600);
   glassPlate.onMouseDown.listen(mouseEventListener);
   glassPlate.onMouseMove.listen(mouseEventListener);
   stage.addChild(glassPlate);
