@@ -1,7 +1,7 @@
 part of stagexl_particle;
 
 class ParticleEmitter extends DisplayObject implements Animatable {
-  final Random _random = new Random();
+  final Random _random = Random();
 
   _Particle? _rootParticle;
   _Particle? _lastParticle;
@@ -31,7 +31,7 @@ class ParticleEmitter extends DisplayObject implements Animatable {
   num _startSizeVariance = 0.0;
   num _endSize = 0.0;
   num _endSizeVariance = 0.0;
-  String? _shape = "circle";
+  String? _shape = 'circle';
 
   // gravity configuration
   num _gravityX = 0.0;
@@ -69,7 +69,7 @@ class ParticleEmitter extends DisplayObject implements Animatable {
 
     for (int i = 0; i < 32; i++) {
       _renderTextureQuads
-          .add(_renderTexture.quad.cut(new Rectangle(i * 32, 0, 32, 32)));
+          .add(_renderTexture.quad.cut(Rectangle(i * 32, 0, 32, 32)));
     }
 
     updateConfig(config);
@@ -90,9 +90,12 @@ class ParticleEmitter extends DisplayObject implements Animatable {
       num targetY = 15.5;
 
       num colorR = _startColor.red + i * (_endColor.red - _startColor.red) / 31;
-      num colorG = _startColor.green + i * (_endColor.green - _startColor.green) / 31;
-      num colorB = _startColor.blue + i * (_endColor.blue - _startColor.blue) / 31;
-      num colorA = _startColor.alpha + i * (_endColor.alpha - _startColor.alpha) / 31;
+      num colorG =
+          _startColor.green + i * (_endColor.green - _startColor.green) / 31;
+      num colorB =
+          _startColor.blue + i * (_endColor.blue - _startColor.blue) / 31;
+      num colorA =
+          _startColor.alpha + i * (_endColor.alpha - _startColor.alpha) / 31;
 
       if (i == 0) colorR = colorG = colorB = colorA = 1.0;
 
@@ -103,9 +106,9 @@ class ParticleEmitter extends DisplayObject implements Animatable {
       var gradient = context.createRadialGradient(
           targetX, targetY, 0, targetX, targetY, radius);
       gradient.addColorStop(
-          0.00, "rgba($colorIntR, $colorIntG, $colorIntB, $colorA)");
+          0.00, 'rgba($colorIntR, $colorIntG, $colorIntB, $colorA)');
       gradient.addColorStop(
-          1.00, "rgba($colorIntR, $colorIntG, $colorIntB, 0.0)");
+          1.00, 'rgba($colorIntR, $colorIntG, $colorIntB, 0.0)');
       context.beginPath();
       context.moveTo(targetX + radius, targetY);
       context.arc(targetX, targetY, radius, 0, pi * 2.0, false);
@@ -143,45 +146,45 @@ class ParticleEmitter extends DisplayObject implements Animatable {
   //-------------------------------------------------------------------------------------------------
 
   void updateConfig(Map config) {
-    _emitterType = _ensureInt(config["emitterType"]);
-    _locationX = _ensureNum(config["location"]["x"]);
-    _locationY = _ensureNum(config["location"]["y"]);
+    _emitterType = _ensureInt(config['emitterType']);
+    _locationX = _ensureNum(config['location']['x']);
+    _locationY = _ensureNum(config['location']['y']);
 
-    _maxNumParticles = _ensureInt(config["maxParticles"]);
-    _duration = _ensureNum(config["duration"]);
-    _lifespan = _ensureNum(config["lifeSpan"]);
-    _lifespanVariance = _ensureNum(config["lifespanVariance"]);
-    _startSize = _ensureNum(config["startSize"]);
-    _startSizeVariance = _ensureNum(config["startSizeVariance"]);
-    _endSize = _ensureNum(config["finishSize"]);
-    _endSizeVariance = _ensureNum(config["finishSizeVariance"]);
-    _shape = config["shape"];
+    _maxNumParticles = _ensureInt(config['maxParticles']);
+    _duration = _ensureNum(config['duration']);
+    _lifespan = _ensureNum(config['lifeSpan']);
+    _lifespanVariance = _ensureNum(config['lifespanVariance']);
+    _startSize = _ensureNum(config['startSize']);
+    _startSizeVariance = _ensureNum(config['startSizeVariance']);
+    _endSize = _ensureNum(config['finishSize']);
+    _endSizeVariance = _ensureNum(config['finishSizeVariance']);
+    _shape = config['shape'];
 
-    _locationXVariance = _ensureNum(config["locationVariance"]["x"]);
-    _locationYVariance = _ensureNum(config["locationVariance"]["y"]);
-    _speed = _ensureNum(config["speed"]);
-    _speedVariance = _ensureNum(config["speedVariance"]);
-    _angle = _ensureNum(config["angle"]) * pi / 180.0;
-    _angleVariance = _ensureNum(config["angleVariance"]) * pi / 180.0;
-    _gravityX = _ensureNum(config["gravity"]["x"]);
-    _gravityY = _ensureNum(config["gravity"]["y"]);
-    _radialAcceleration = _ensureNum(config["radialAcceleration"]);
+    _locationXVariance = _ensureNum(config['locationVariance']['x']);
+    _locationYVariance = _ensureNum(config['locationVariance']['y']);
+    _speed = _ensureNum(config['speed']);
+    _speedVariance = _ensureNum(config['speedVariance']);
+    _angle = _ensureNum(config['angle']) * pi / 180.0;
+    _angleVariance = _ensureNum(config['angleVariance']) * pi / 180.0;
+    _gravityX = _ensureNum(config['gravity']['x']);
+    _gravityY = _ensureNum(config['gravity']['y']);
+    _radialAcceleration = _ensureNum(config['radialAcceleration']);
     _radialAccelerationVariance =
-        _ensureNum(config["radialAccelerationVariance"]);
-    _tangentialAcceleration = _ensureNum(config["tangentialAcceleration"]);
+        _ensureNum(config['radialAccelerationVariance']);
+    _tangentialAcceleration = _ensureNum(config['tangentialAcceleration']);
     _tangentialAccelerationVariance =
-        _ensureNum(config["tangentialAccelerationVariance"]);
+        _ensureNum(config['tangentialAccelerationVariance']);
 
-    _minRadius = _ensureNum(config["minRadius"]);
-    _maxRadius = _ensureNum(config["maxRadius"]);
-    _maxRadiusVariance = _ensureNum(config["maxRadiusVariance"]);
-    _rotatePerSecond = _ensureNum(config["rotatePerSecond"]) * pi / 180.0;
+    _minRadius = _ensureNum(config['minRadius']);
+    _maxRadius = _ensureNum(config['maxRadius']);
+    _maxRadiusVariance = _ensureNum(config['maxRadiusVariance']);
+    _rotatePerSecond = _ensureNum(config['rotatePerSecond']) * pi / 180.0;
     _rotatePerSecondVariance =
-        _ensureNum(config["rotatePerSecondVariance"]) * pi / 180.0;
+        _ensureNum(config['rotatePerSecondVariance']) * pi / 180.0;
 
-    _compositeOperation = config["compositeOperation"];
-    _startColor = _ParticleColor.fromJSON(config["startColor"]);
-    _endColor = _ParticleColor.fromJSON(config["finishColor"]);
+    _compositeOperation = config['compositeOperation'];
+    _startColor = _ParticleColor.fromJSON(config['startColor']);
+    _endColor = _ParticleColor.fromJSON(config['finishColor']);
 
     if (_duration <= 0) _duration = double.infinity;
     _emissionTime = _duration;
@@ -225,7 +228,8 @@ class ParticleEmitter extends DisplayObject implements Animatable {
         if (_particleCount < _maxNumParticles) {
           var nextParticle = particle!._nextParticle;
 
-          nextParticle ??= _lastParticle = particle._nextParticle = _Particle(this);
+          nextParticle ??=
+              _lastParticle = particle._nextParticle = _Particle(this);
 
           particle = nextParticle;
           particle._initParticle();
@@ -266,8 +270,8 @@ class ParticleEmitter extends DisplayObject implements Animatable {
       }
     } else if (renderContext is RenderContextWebGL) {
       var renderTextureQuad = _renderTextureQuads[0];
-      var renderProgram =
-          renderContext.getRenderProgram(r"$ParticleRenderProgram", () => _ParticleRenderProgram());
+      var renderProgram = renderContext.getRenderProgram(
+          r'$ParticleRenderProgram', () => _ParticleRenderProgram());
 
       renderContext.activateRenderProgram(renderProgram);
       renderContext.activateRenderTexture(renderTextureQuad.renderTexture);

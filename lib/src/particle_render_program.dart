@@ -5,7 +5,7 @@ class _ParticleRenderProgram extends RenderProgram {
   // aVertexTextCoord:  Float32(u), Float32(v)
   // aVertextColor:     Float32(r), Float32(g), Float32(b), Float32(a)
 
-  String get vertexShaderSource => """
+  String get vertexShaderSource => '''
 
     precision mediump float;
     uniform mat4 uProjectionMatrix;
@@ -23,9 +23,9 @@ class _ParticleRenderProgram extends RenderProgram {
       vColor = aVertexColor;
       gl_Position = vec4(aVertexPosition, 1.0, 1.0) * uGlobalMatrix * uProjectionMatrix;
     }
-    """;
+    ''';
 
-  String get fragmentShaderSource => """
+  String get fragmentShaderSource => '''
 
     precision mediump float;
     uniform sampler2D uSampler;
@@ -37,7 +37,7 @@ class _ParticleRenderProgram extends RenderProgram {
       vec4 color = texture2D(uSampler, vTextCoord);
       gl_FragColor = vec4(color.rgb * vColor.rgb * vColor.a, color.a * vColor.a);
     }
-    """;
+    ''';
 
   //---------------------------------------------------------------------------
 
@@ -47,26 +47,25 @@ class _ParticleRenderProgram extends RenderProgram {
 
   set globalMatrix(Matrix globalMatrix) {
     _globalMatrix.copyFrom2D(globalMatrix);
-    renderingContext.uniformMatrix4fv(uniforms["uGlobalMatrix"], false, _globalMatrix.data);
+    renderingContext.uniformMatrix4fv(
+        uniforms['uGlobalMatrix'], false, _globalMatrix.data);
   }
 
   @override
   void activate(RenderContextWebGL renderContext) {
     super.activate(renderContext);
 
-    renderingContext.uniform1i(uniforms["uSampler"], 0);
+    renderingContext.uniform1i(uniforms['uSampler'], 0);
 
-    renderBufferVertex.bindAttribute(attributes["aVertexPosition"], 2, 32, 0);
-    renderBufferVertex.bindAttribute(attributes["aVertexTextCoord"], 2, 32, 8);
-    renderBufferVertex.bindAttribute(attributes["aVertexColor"], 4, 32, 16);
+    renderBufferVertex.bindAttribute(attributes['aVertexPosition'], 2, 32, 0);
+    renderBufferVertex.bindAttribute(attributes['aVertexTextCoord'], 2, 32, 8);
+    renderBufferVertex.bindAttribute(attributes['aVertexColor'], 4, 32, 16);
   }
 
   //---------------------------------------------------------------------------
 
-  void renderParticle(
-      RenderTextureQuad renderTextureQuad,
-      num x, num y, num size, num r, num g, num b, num a) {
-
+  void renderParticle(RenderTextureQuad renderTextureQuad, num x, num y,
+      num size, num r, num g, num b, num a) {
     num left = x - size / 2;
     num top = y - size / 2;
     num right = x + size / 2;
