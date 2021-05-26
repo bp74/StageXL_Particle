@@ -1,7 +1,6 @@
 part of stagexl_particle;
 
 class _ParticleRenderProgram extends RenderProgram {
-
   // aVertexPosition:   Float32(x), Float32(y)
   // aVertexTextCoord:  Float32(u), Float32(v)
   // aVertextColor:     Float32(r), Float32(g), Float32(b), Float32(a)
@@ -42,7 +41,7 @@ class _ParticleRenderProgram extends RenderProgram {
 
   //---------------------------------------------------------------------------
 
-  final Matrix3D _globalMatrix = new Matrix3D.fromIdentity();
+  final Matrix3D _globalMatrix = Matrix3D.fromIdentity();
 
   //---------------------------------------------------------------------------
 
@@ -53,7 +52,6 @@ class _ParticleRenderProgram extends RenderProgram {
 
   @override
   void activate(RenderContextWebGL renderContext) {
-
     super.activate(renderContext);
 
     renderingContext.uniform1i(uniforms["uSampler"], 0);

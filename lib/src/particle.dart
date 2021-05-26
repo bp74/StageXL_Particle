@@ -58,12 +58,11 @@ class _Particle {
     _emitRadius = pe._maxRadius + pe._maxRadiusVariance * pe._randomVariance;
     _emitRadiusDelta = pe._maxRadius / _totalTime;
     _emitRotation = pe._angle + pe._angleVariance * pe._randomVariance;
-    _emitRotationDelta =
-        pe._rotatePerSecond + pe._rotatePerSecondVariance * pe._randomVariance;
-    _radialAcceleration = pe._radialAcceleration +
-        pe._radialAccelerationVariance * pe._randomVariance;
-    _tangentialAcceleration = pe._tangentialAcceleration +
-        pe._tangentialAccelerationVariance * pe._randomVariance;
+    _emitRotationDelta = pe._rotatePerSecond + pe._rotatePerSecondVariance * pe._randomVariance;
+    _radialAcceleration =
+        pe._radialAcceleration + pe._radialAccelerationVariance * pe._randomVariance;
+    _tangentialAcceleration =
+        pe._tangentialAcceleration + pe._tangentialAccelerationVariance * pe._randomVariance;
 
     num size1 = pe._startSize + pe._startSizeVariance * pe._randomVariance;
     num size2 = pe._endSize + pe._endSizeVariance * pe._randomVariance;
@@ -113,13 +112,9 @@ class _Particle {
       var gravityY = pe._gravityY;
 
       _velocityX += passedTime *
-          (gravityX +
-              distanceX * _radialAcceleration -
-              distanceY * _tangentialAcceleration);
+          (gravityX + distanceX * _radialAcceleration - distanceY * _tangentialAcceleration);
       _velocityY += passedTime *
-          (gravityY +
-              distanceY * _radialAcceleration +
-              distanceX * _tangentialAcceleration);
+          (gravityY + distanceY * _radialAcceleration + distanceX * _tangentialAcceleration);
       _x += _velocityX * passedTime;
       _y += _velocityY * passedTime;
     }
@@ -144,30 +139,22 @@ class _Particle {
     RenderTextureQuad renderTextureQuad =
         _particleEmitter._renderTextureQuads[index];
     var source = renderTextureQuad.renderTexture.canvas;
-    Rectangle<int> sourceRectangle = renderTextureQuad.sourceRectangle;
-    num sourceX = sourceRectangle.left;
-    num sourceY = sourceRectangle.top;
-    num sourceWidth = sourceRectangle.width;
-    num sourceHeight = sourceRectangle.height;
-    num destinationX = _x - _size / 2.0;
-    num destinationY = _y - _size / 2.0;
-    num destinationWidth = _size;
-    num destinationHeight = _size;
+    var sourceRectangle = renderTextureQuad.sourceRectangle;
+    var sourceX = sourceRectangle.left;
+    var sourceY = sourceRectangle.top;
+    var sourceWidth = sourceRectangle.width;
+    var sourceHeight = sourceRectangle.height;
+    var destinationX = _x - _size / 2.0;
+    var destinationY = _y - _size / 2.0;
+    var destinationWidth = _size;
+    var destinationHeight = _size;
 
-    context.drawImageScaledFromSource(
-        source,
-        sourceX,
-        sourceY,
-        sourceWidth,
-        sourceHeight,
-        destinationX,
-        destinationY,
-        destinationWidth,
-        destinationHeight);
+    context.drawImageScaledFromSource(source, sourceX, sourceY, sourceWidth, sourceHeight,
+        destinationX, destinationY, destinationWidth, destinationHeight);
   }
 
   _renderParticleWegGL(_ParticleRenderProgram renderProgram) {
-    renderProgram.renderParticle(_particleEmitter._renderTextureQuads[0], _x,
-        _y, _size, _colorR, _colorG, _colorB, _colorA);
+    renderProgram.renderParticle(
+        _particleEmitter._renderTextureQuads[0], _x, _y, _size, _colorR, _colorG, _colorB, _colorA);
   }
 }

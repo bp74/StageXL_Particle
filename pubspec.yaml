@@ -11,6 +11,7 @@ dependencies:
   stagexl: ^2.0.0
 
 dev_dependencies:
+  pedantic: any
   build_runner: ^2.0.4
   build_test: ^2.1.0
   build_web_compilers: ^3.0.0

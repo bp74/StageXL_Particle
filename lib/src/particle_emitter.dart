@@ -6,7 +6,7 @@ class ParticleEmitter extends DisplayObject implements Animatable {
   _Particle? _rootParticle;
   _Particle? _lastParticle;
 
-  RenderTexture _renderTexture = new RenderTexture(1024, 32, Color.Transparent);
+  RenderTexture _renderTexture = RenderTexture(1024, 32, Color.Transparent);
   List<RenderTextureQuad> _renderTextureQuads = <RenderTextureQuad>[];
   int _particleCount = 0;
   num _frameTime = 0.0;
@@ -60,7 +60,7 @@ class ParticleEmitter extends DisplayObject implements Animatable {
   //-------------------------------------------------------------------------------------------------
 
   ParticleEmitter(Map config) {
-    _rootParticle = new _Particle(this);
+    _rootParticle = _Particle(this);
     _lastParticle = _rootParticle;
 
     _emissionTime = 0.0;
@@ -68,8 +68,6 @@ class ParticleEmitter extends DisplayObject implements Animatable {
     _particleCount = 0;
 
     for (int i = 0; i < 32; i++) {
-      _renderTextureQuads
-          .add(_renderTexture.quad.cut(new Rectangle(i * 32, 0, 32, 32)));
     }
 
     updateConfig(config);
@@ -90,12 +88,9 @@ class ParticleEmitter extends DisplayObject implements Animatable {
       num targetY = 15.5;
 
       num colorR = _startColor.red + i * (_endColor.red - _startColor.red) / 31;
-      num colorG =
-          _startColor.green + i * (_endColor.green - _startColor.green) / 31;
-      num colorB =
-          _startColor.blue + i * (_endColor.blue - _startColor.blue) / 31;
-      num colorA =
-          _startColor.alpha + i * (_endColor.alpha - _startColor.alpha) / 31;
+      num colorG = _startColor.green + i * (_endColor.green - _startColor.green) / 31;
+      num colorB = _startColor.blue + i * (_endColor.blue - _startColor.blue) / 31;
+      num colorA = _startColor.alpha + i * (_endColor.alpha - _startColor.alpha) / 31;
 
       if (i == 0) colorR = colorG = colorB = colorA = 1.0;
 
@@ -183,8 +178,8 @@ class ParticleEmitter extends DisplayObject implements Animatable {
         _ensureNum(config["rotatePerSecondVariance"]) * pi / 180.0;
 
     _compositeOperation = config["compositeOperation"];
-    _startColor = new _ParticleColor.fromJSON(config["startColor"]);
-    _endColor = new _ParticleColor.fromJSON(config["finishColor"]);
+    _startColor = _ParticleColor.fromJSON(config["startColor"]);
+    _endColor = _ParticleColor.fromJSON(config["finishColor"]);
 
     if (_duration <= 0) _duration = double.infinity;
     _emissionTime = _duration;
@@ -272,8 +267,8 @@ class ParticleEmitter extends DisplayObject implements Animatable {
       }
     } else if (renderContext is RenderContextWebGL) {
       var renderTextureQuad = _renderTextureQuads[0];
-      var renderProgram = renderContext.getRenderProgram(
-          r"$ParticleRenderProgram", () => new _ParticleRenderProgram());
+      var renderProgram =
+          renderContext.getRenderProgram(r"$ParticleRenderProgram", () => _ParticleRenderProgram());
 
       renderContext.activateRenderProgram(renderProgram);
       renderContext.activateRenderTexture(renderTextureQuad.renderTexture);
