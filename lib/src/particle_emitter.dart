@@ -68,6 +68,8 @@ class ParticleEmitter extends DisplayObject implements Animatable {
     _particleCount = 0;
 
     for (int i = 0; i < 32; i++) {
+      _renderTextureQuads
+          .add(_renderTexture.quad.cut(new Rectangle(i * 32, 0, 32, 32)));
     }
 
     updateConfig(config);
@@ -223,10 +225,7 @@ class ParticleEmitter extends DisplayObject implements Animatable {
         if (_particleCount < _maxNumParticles) {
           var nextParticle = particle!._nextParticle;
 
-          if (nextParticle == null) {
-            nextParticle =
-                _lastParticle = particle._nextParticle = new _Particle(this);
-          }
+          nextParticle ??= _lastParticle = particle._nextParticle = _Particle(this);
 
           particle = nextParticle;
           particle._initParticle();
