@@ -7,9 +7,9 @@ class _ParticleColor {
   num alpha = 0.0;
 
   _ParticleColor.fromJSON(Map json) {
-    red = min(1.0, max(0.0, _ensureNum(json["red"])));
-    green = min(1.0, max(0.0, _ensureNum(json["green"])));
-    blue = min(1.0, max(0.0, _ensureNum(json["blue"])));
-    alpha = min(1.0, max(0.0, _ensureNum(json["alpha"])));
+    red = min(1.0, max(0.0, _ensureNum(json['red'])));
+    green = min(1.0, max(0.0, _ensureNum(json['green'])));
+    blue = min(1.0, max(0.0, _ensureNum(json['blue'])));
+    alpha = min(1.0, max(0.0, _ensureNum(json['alpha'])));
   }
 }

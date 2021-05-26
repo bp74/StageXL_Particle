@@ -21,22 +21,22 @@ bool _ensureBool(bool value) {
   if (value is bool) {
     return value;
   } else {
-    throw ArgumentError("The supplied value ($value) is not a bool.");
+    throw ArgumentError('The supplied value ($value) is not a bool.');
   }
 }
 
-int _ensureInt(int value) {
+int _ensureInt(int? value) {
   if (value is int) {
     return value;
   } else {
-    throw ArgumentError("The supplied value ($value) is not an int.");
+    throw ArgumentError('The supplied value ($value) is not an int.');
   }
 }
 
-num _ensureNum(num value) {
+num _ensureNum(num? value) {
   if (value is num) {
     return value;
   } else {
-    throw ArgumentError("The supplied value ($value) is not a number.");
+    throw ArgumentError('The supplied value ($value) is not a number.');
   }
 }
