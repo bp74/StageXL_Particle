@@ -5,7 +5,7 @@ class _ParticleRenderProgram extends RenderProgram {
   // aVertexTextCoord:  Float32(u), Float32(v)
   // aVertextColor:     Float32(r), Float32(g), Float32(b), Float32(a)
 
-  String get vertexShaderSource => """
+  String get vertexShaderSource => '''
 
     precision mediump float;
     uniform mat4 uProjectionMatrix;
@@ -23,9 +23,9 @@ class _ParticleRenderProgram extends RenderProgram {
       vColor = aVertexColor;
       gl_Position = vec4(aVertexPosition, 1.0, 1.0) * uGlobalMatrix * uProjectionMatrix;
     }
-    """;
+    ''';
 
-  String get fragmentShaderSource => """
+  String get fragmentShaderSource => '''
 
     precision mediump float;
     uniform sampler2D uSampler;
@@ -37,7 +37,7 @@ class _ParticleRenderProgram extends RenderProgram {
       vec4 color = texture2D(uSampler, vTextCoord);
       gl_FragColor = vec4(color.rgb * vColor.rgb * vColor.a, color.a * vColor.a);
     }
-    """;
+    ''';
 
   //---------------------------------------------------------------------------
 
@@ -45,30 +45,31 @@ class _ParticleRenderProgram extends RenderProgram {
 
   //---------------------------------------------------------------------------
 
-  void set globalMatrix(Matrix globalMatrix) {
+  set globalMatrix(Matrix globalMatrix) {
     _globalMatrix.copyFrom2D(globalMatrix);
-    renderingContext.uniformMatrix4fv(uniforms["uGlobalMatrix"], false, _globalMatrix.data);
+    renderingContext.uniformMatrix4fv(
+        uniforms['uGlobalMatrix'], false, _globalMatrix.data);
   }
 
   @override
   void activate(RenderContextWebGL renderContext) {
     super.activate(renderContext);
 
-    renderingContext.uniform1i(uniforms["uSampler"], 0);
+    renderingContext.uniform1i(uniforms['uSampler'], 0);
 
-    renderBufferVertex.bindAttribute(attributes["aVertexPosition"], 2, 32, 0);
-    renderBufferVertex.bindAttribute(attributes["aVertexTextCoord"], 2, 32, 8);
-    renderBufferVertex.bindAttribute(attributes["aVertexColor"], 4, 32, 16);
+    renderBufferVertex.bindAttribute(attributes['aVertexPosition'], 2, 32, 0);
+    renderBufferVertex.bindAttribute(attributes['aVertexTextCoord'], 2, 32, 8);
+    renderBufferVertex.bindAttribute(attributes['aVertexColor'], 4, 32, 16);
   }
 
   //---------------------------------------------------------------------------
 
-  void renderParticle(
-      RenderTextureQuad renderTextureQuad, num x, num y, num size, num r, num g, num b, num a) {
-    var left = x - size / 2;
-    var top = y - size / 2;
-    var right = x + size / 2;
-    var bottom = y + size / 2;
+  void renderParticle(RenderTextureQuad renderTextureQuad, num x, num y,
+      num size, num r, num g, num b, num a) {
+    num left = x - size / 2;
+    num top = y - size / 2;
+    num right = x + size / 2;
+    num bottom = y + size / 2;
 
     var vxList = renderTextureQuad.vxList;
     var ixListCount = 6;
@@ -106,15 +107,15 @@ class _ParticleRenderProgram extends RenderProgram {
     var vxIndex = renderBufferVertex.position;
     if (vxIndex > vxData.length - 32) return;
 
-    vxData[vxIndex + 00] = left;
-    vxData[vxIndex + 01] = top;
+    vxData[vxIndex + 00] = left as double;
+    vxData[vxIndex + 01] = top as double;
     vxData[vxIndex + 02] = vxList[02];
     vxData[vxIndex + 03] = vxList[03];
-    vxData[vxIndex + 04] = r;
-    vxData[vxIndex + 05] = g;
-    vxData[vxIndex + 06] = b;
-    vxData[vxIndex + 07] = a;
-    vxData[vxIndex + 08] = right;
+    vxData[vxIndex + 04] = r as double;
+    vxData[vxIndex + 05] = g as double;
+    vxData[vxIndex + 06] = b as double;
+    vxData[vxIndex + 07] = a as double;
+    vxData[vxIndex + 08] = right as double;
     vxData[vxIndex + 09] = top;
     vxData[vxIndex + 10] = vxList[06];
     vxData[vxIndex + 11] = vxList[07];
@@ -123,7 +124,7 @@ class _ParticleRenderProgram extends RenderProgram {
     vxData[vxIndex + 14] = b;
     vxData[vxIndex + 15] = a;
     vxData[vxIndex + 16] = right;
-    vxData[vxIndex + 17] = bottom;
+    vxData[vxIndex + 17] = bottom as double;
     vxData[vxIndex + 18] = vxList[10];
     vxData[vxIndex + 19] = vxList[11];
     vxData[vxIndex + 20] = r;

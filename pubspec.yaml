@@ -1,17 +1,17 @@
 name: stagexl_particle
-version: 0.4.1
+version: 1.0.0
 author: Bernhard Pichler <support@stagexl.org>
 description: The particle emitter runtime for the StageXL library.
 homepage: http://www.stagexl.org
 
 environment:
-  sdk: '>=2.4.0 <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  stagexl: '>=1.4.1 <2.0.0'
+  stagexl: ^2.0.0
 
 dev_dependencies:
   pedantic: any
-  build_runner: any
-  build_test: any
-  build_web_compilers: any
+  build_runner: ^2.0.4
+  build_test: ^2.1.0
+  build_web_compilers: ^3.0.0
